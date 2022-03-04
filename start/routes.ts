@@ -18,8 +18,10 @@
 |
 */
 
+import './user.routes'
 import Route from '@ioc:Adonis/Core/Route'
+import Env from '@ioc:Adonis/Core/Env'
 
 Route.get('/', async () => {
-  return { hello: 'world' }
+  return { hello: Env.get('PG_HOST') }
 })
