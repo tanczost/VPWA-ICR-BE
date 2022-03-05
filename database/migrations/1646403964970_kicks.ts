@@ -6,8 +6,9 @@ export default class Kicks extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('inviterId').notNullable().references('users.id')
-      table.integer('invitedId').notNullable().references('users.id')
+      table.integer('kickerId').notNullable().references('users.id')
+      table.integer('kickedId').notNullable().references('users.id')
+      table.unique(['kickedId', 'kickerId'])
       table.integer('channelId').notNullable().references('channels.id')
 
       /**
