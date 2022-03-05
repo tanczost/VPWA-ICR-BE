@@ -6,10 +6,10 @@ export default class Kicks extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('kickerId').notNullable().references('users.id')
-      table.integer('kickedId').notNullable().references('users.id')
-      table.unique(['kickedId', 'kickerId'])
-      table.integer('channelId').notNullable().references('channels.id')
+      table.integer('kicker_id').notNullable().references('users.id')
+      table.integer('kicked_id').notNullable().references('users.id')
+      table.unique(['kicked_id', 'kicker_id'])
+      table.integer('channel_id').notNullable().references('channels.id')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

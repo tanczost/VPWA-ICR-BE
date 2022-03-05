@@ -6,9 +6,9 @@ export default class ChannelUsers extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('userId').notNullable().references('users.id')
-      table.integer('channelId').notNullable().references('channels.id')
-      table.unique(['userId', 'channelId'])
+      table.integer('user_id').notNullable().references('users.id')
+      table.integer('channel_id').notNullable().references('channels.id')
+      table.unique(['user_id', 'channel_id'])
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

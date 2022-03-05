@@ -6,9 +6,9 @@ export default class Mentions extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('mentionedId').notNullable().references('users.id')
-      table.integer('messageId').notNullable().references('messages.id')
-      table.boolean('alreadyRead').defaultTo(false)
+      table.integer('mentioned_id').notNullable().references('users.id')
+      table.integer('message_id').notNullable().references('messages.id')
+      table.boolean('already_read').defaultTo(false)
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

@@ -6,10 +6,10 @@ export default class Invitations extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.integer('inviterId').notNullable().references('users.id')
-      table.integer('invitedId').notNullable().references('users.id')
-      table.unique(['invitedId', 'inviterId'])
-      table.integer('channelId').notNullable().references('channels.id')
+      table.integer('inviter_id').notNullable().references('users.id')
+      table.integer('invited_id').notNullable().references('users.id')
+      table.unique(['invited_id', 'inviter_id'])
+      table.integer('channel_id').notNullable().references('channels.id')
       table.boolean('accepted').defaultTo(false)
 
       /**

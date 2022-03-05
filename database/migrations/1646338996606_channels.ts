@@ -8,7 +8,7 @@ export default class Channels extends BaseSchema {
       table.increments('id')
       table.string('name').unique()
       table.boolean('private').defaultTo(false)
-      table.timestamp('lastActivity', { useTz: true })
+      table.timestamp('last_activity', { useTz: true })
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
