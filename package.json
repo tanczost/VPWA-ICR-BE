@@ -26,6 +26,7 @@
     "@adonisjs/auth": "^8.0.12",
     "@adonisjs/core": "^5.4.2",
     "@adonisjs/lucid": "^17.0.1",
+    "@adonisjs/redis": "^7.1.1",
     "@adonisjs/repl": "^3.1.8",
     "luxon": "^2.3.1",
     "pg": "^8.7.3",

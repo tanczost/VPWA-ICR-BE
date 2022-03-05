@@ -5,24 +5,24 @@ export default class UsersController {
   public async index({}: HttpContextContract) {}
 
   public async create({}: HttpContextContract) {
-    // const user = new User()
-    // await user
-    //   .fill({
-    //     nickName: 'tanczi',
-    //     firstName: 'Tomi',
-    //     lastName: 'Tanczos',
-    //     email: 'tanczi@gmail.com',
-    //     password: '123456',
-    //   })
-    //   .save()
+    const user = new User()
+    await user
+      .fill({
+        nickName: 'tanczii',
+        firstName: 'Tomi',
+        lastName: 'Tanczos',
+        email: 'tanczii@gmail.com',
+        password: '123456',
+      })
+      .save()
 
     // console.log(user)
 
-    const user = await User.find(1)
+    // const user = await User.find(1)
 
-    console.log(user)
+    // console.log(user)
 
-    return user?.serialize()
+    // return user?.serialize()
   }
 
   public async store({}: HttpContextContract) {}
