@@ -1,5 +1,18 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeSave,
+  column,
+  hasMany,
+  HasMany,
+  ManyToMany,
+  manyToMany,
+} from '@ioc:Adonis/Lucid/Orm'
+import Hash from '@ioc:Adonis/Core/Hash'
+import Channel from './Channel'
+import Message from './Message'
+import Mention from './Mention'
+import ReadMessage from './ReadMessage'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -20,7 +33,7 @@ export default class User extends BaseModel {
   @column()
   public notify: boolean
 
-  @column()
+  @column({ serializeAs: null })
   public password: string
 
   @column()
@@ -31,4 +44,23 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @beforeSave()
+  public static async hashPassword(user: User) {
+    if (user.$dirty.password) {
+      user.password = await Hash.make(user.password)
+    }
+  }
+
+  @hasMany(() => Message)
+  public messages: HasMany<typeof Message>
+
+  @hasMany(() => Mention)
+  public mentiones: HasMany<typeof Mention>
+
+  @hasMany(() => ReadMessage)
+  public readMessages: HasMany<typeof ReadMessage>
+
+  @manyToMany(() => Channel)
+  public channels: ManyToMany<typeof Channel>
 }

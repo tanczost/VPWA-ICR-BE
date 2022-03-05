@@ -8,6 +8,7 @@ export default class ChannelUsers extends BaseSchema {
       table.increments('id')
       table.integer('userId').notNullable().references('users.id')
       table.integer('channelId').notNullable().references('channels.id')
+      table.unique(['userId', 'channelId'])
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
