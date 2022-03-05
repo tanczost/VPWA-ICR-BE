@@ -15,19 +15,14 @@ export default class UsersController {
         password: '123456',
       })
       .save()
-
-    // console.log(user)
-
-    // const user = await User.find(1)
-
-    // console.log(user)
-
-    // return user?.serialize()
   }
 
   public async store({}: HttpContextContract) {}
 
-  public async show({}: HttpContextContract) {}
+  public async show({}: HttpContextContract) {
+    const user = await User.find(1)
+    return user?.serialize()
+  }
 
   public async edit({}: HttpContextContract) {}
 
