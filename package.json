@@ -7,7 +7,8 @@
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "tanczi": "node ace migration:run; node ace db:seed --files \"./database/seeders/User.ts\";"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.4.1",
