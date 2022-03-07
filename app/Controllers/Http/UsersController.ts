@@ -1,26 +1,27 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+// import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
+
+interface NewUser {
+  nickName: string
+  lastName: string
+  firstName: string
+  email: string
+  password: string
+}
 
 export default class UsersController {
   public async index({}: HttpContextContract) {}
 
-  public async create({ request }: HttpContextContract) {
-    const userSchema = schema.create({
-      nickName: schema.string({ escape: true, trim: true }, [rules.minLength(6)]),
-      firstName: schema.string({ trim: true }, [rules.minLength(3)]),
-      lastName: schema.string({ trim: true }, [rules.minLength(3)]),
-      email: schema.string({ trim: true }, [rules.email()]),
-      password: schema.string({}, [rules.minLength(6)]),
-    })
-
-    const payload = await request.validate({ schema: userSchema })
-
+  public async create(userData: NewUser, { response }: HttpContextContract) {
     const user = new User()
 
-    await user.fill(payload).save()
-
-    return user.$isPersisted ? { message: 'User is saved' } : { message: 'User is not saved' }
+    try {
+      await user.fill(userData).save()
+      return { message: 'User is saved' }
+    } catch (error) {
+      response.status(400).send({ message: 'Error creating user' })
+    }
   }
 
   public async store({}: HttpContextContract) {}
