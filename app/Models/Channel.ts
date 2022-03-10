@@ -7,6 +7,15 @@ export default class Channel extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
+  @column()
+  public name: string
+
+  @column()
+  public private: boolean
+
+  @column()
+  public lastActivity: DateTime
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

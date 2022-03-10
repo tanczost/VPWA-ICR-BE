@@ -20,7 +20,8 @@ export default class UsersController {
       await user.fill(userData).save()
       return { message: 'User is saved' }
     } catch (error) {
-      response.status(400).send({ message: 'Error creating user' })
+      console.error(error)
+      response.status(400).send({ message: error.detail })
     }
   }
 

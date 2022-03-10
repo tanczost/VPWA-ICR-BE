@@ -27,6 +27,7 @@ Route.post('/registration/', async (ctx) => {
     const payload = await ctx.request.validate({ schema: userSchema })
     return new UsersController().create(payload, ctx)
   } catch (error) {
-    ctx.response.badRequest(error.messages.errors[0])
+    console.log(error)
+    ctx.response.badRequest()
   }
 })
