@@ -8,6 +8,25 @@ interface NewChannel {
 }
 
 export default class ChannelsController {
+  public async getUsers(channelId: number, { response }: HttpContextContract) {
+    const channel = await Channel.findOrFail(channelId)
+
+    if (channel) {
+      await channel.load('users')
+      return {
+        channelId,
+        users: channel.users.map((user) => {
+          return {
+            username: user.nickName,
+            state: user.state,
+          }
+        }),
+      }
+    } else {
+      response.status(404)
+    }
+  }
+
   public async index({}: HttpContextContract) {}
 
   public async create(channelData: NewChannel, { response }: HttpContextContract) {

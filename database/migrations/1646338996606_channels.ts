@@ -5,7 +5,7 @@ export default class Channels extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
+      table.increments('id').primary()
       table.string('name').unique()
       table.boolean('private').defaultTo(false)
       table.timestamp('last_activity', { useTz: true })

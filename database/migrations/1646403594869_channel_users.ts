@@ -1,13 +1,14 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class ChannelUsers extends BaseSchema {
-  protected tableName = 'channel_users'
+  protected tableName = 'channel_user'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-      table.integer('user_id').notNullable().references('users.id')
-      table.integer('channel_id').notNullable().references('channels.id')
+      table.increments('id').primary()
+
+      table.integer('user_id').unsigned().references('users.id')
+      table.integer('channel_id').unsigned().references('channels.id')
       table.unique(['user_id', 'channel_id'])
 
       /**
