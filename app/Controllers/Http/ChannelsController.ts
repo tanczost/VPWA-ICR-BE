@@ -8,6 +8,22 @@ interface NewChannel {
 }
 
 export default class ChannelsController {
+  public async addUser(channelId: number, userId: number, { response }: HttpContextContract) {
+    const channel = await Channel.findOrFail(channelId)
+
+    if (channel.private) {
+      response.status(403).send({ message: 'Tanczi doiimplementuj' })
+    } else {
+      try {
+        await channel.related('users').attach([userId])
+        response.send({ message: 'User added to channel' })
+      } catch (error) {
+        console.error(error)
+        response.status(404).send({ message: error.detail })
+      }
+    }
+  }
+
   public async getUsers(channelId: number, { response }: HttpContextContract) {
     const channel = await Channel.findOrFail(channelId)
 

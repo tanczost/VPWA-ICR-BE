@@ -21,10 +21,29 @@ Route.post('/channel/', async (ctx) => {
 // get channel's users
 Route.get('/channel/:channelId/users/', async (ctx) => {
   try {
-    const toInt = parseInt(ctx.params.channelId)
-    return new ChannelsController().getUsers(toInt, ctx)
+    const channelIdtoInt = parseInt(ctx.params.channelId)
+    return new ChannelsController().getUsers(channelIdtoInt, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
   }
+  // }).middleware('auth:api'
+})
+
+// add user to channel
+Route.post('/channel/:channelId/add-user', async (ctx) => {
+  try {
+    const channelIdtoInt = parseInt(ctx.params.channelId)
+    const addUserSchema = schema.create({
+      userId: schema.number([rules.unsigned()]),
+    })
+
+    const payload = await ctx.request.validate({ schema: addUserSchema })
+
+    return new ChannelsController().addUser(channelIdtoInt, payload.userId, ctx)
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+  // }).middleware('auth:api'
 })
