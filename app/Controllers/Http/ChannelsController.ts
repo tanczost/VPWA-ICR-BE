@@ -5,14 +5,24 @@ import { DateTime } from 'luxon'
 interface NewChannel {
   name: string
   private?: boolean
+  ownerId: number
 }
 
 export default class ChannelsController {
-  public async addUser(channelId: number, userId: number, { response }: HttpContextContract) {
+  public async addUser(
+    channelId: number,
+    userId: number,
+    requesterUserId: number | undefined,
+    { response }: HttpContextContract
+  ) {
     const channel = await Channel.findOrFail(channelId)
 
     if (channel.private) {
-      response.status(403).send({ message: 'Tanczi doiimplementuj' })
+      if (requesterUserId !== channel.ownerId) {
+        return response.status(403).send({ message: 'Only owner can add user to private channel' })
+      }
+      await channel.related('users').attach([userId])
+      response.send({ message: 'User added to channel' })
     } else {
       try {
         await channel.related('users').attach([userId])
@@ -51,6 +61,7 @@ export default class ChannelsController {
     try {
       console.log(DateTime.now())
       await channel.fill({ ...channelData, lastActivity: DateTime.now() }).save()
+      await channel.related('users').attach([channelData.ownerId])
       return { message: 'Channel is created' }
     } catch (error) {
       console.error(error)

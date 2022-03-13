@@ -9,14 +9,23 @@ Route.post('/channel/', async (ctx) => {
       name: schema.string({ escape: true, trim: true }, [rules.minLength(3)]),
       private: schema.boolean(),
     })
-    const payload = await ctx.request.validate({ schema: channelSchema })
+
+    if (ctx.auth.user?.id === undefined) {
+      return ctx.response.status(403).send({ message: 'Authentication failed' })
+    }
+
+    const payload = {
+      ...(await ctx.request.validate({ schema: channelSchema })),
+      ownerId: ctx.auth.user?.id,
+    }
+
     return new ChannelsController().create(payload, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
   }
-  // }).middleware('auth:api')
-})
+}).middleware('auth:api')
+// })
 
 // get channel's users
 Route.get('/channel/:channelId/users/', async (ctx) => {
@@ -33,6 +42,7 @@ Route.get('/channel/:channelId/users/', async (ctx) => {
 // add user to channel
 Route.post('/channel/:channelId/add-user', async (ctx) => {
   try {
+    const requesterUserId = ctx.auth.user?.id
     const channelIdtoInt = parseInt(ctx.params.channelId)
     const addUserSchema = schema.create({
       userId: schema.number([rules.unsigned()]),
@@ -40,10 +50,10 @@ Route.post('/channel/:channelId/add-user', async (ctx) => {
 
     const payload = await ctx.request.validate({ schema: addUserSchema })
 
-    return new ChannelsController().addUser(channelIdtoInt, payload.userId, ctx)
+    return new ChannelsController().addUser(channelIdtoInt, payload.userId, requesterUserId, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
   }
-  // }).middleware('auth:api'
-})
+}).middleware('auth:api')
+// })

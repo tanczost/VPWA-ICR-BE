@@ -52,6 +52,9 @@ export default class User extends BaseModel {
     }
   }
 
+  @hasMany(() => Channel)
+  public ownChannels: HasMany<typeof Channel>
+
   @hasMany(() => Message)
   public messages: HasMany<typeof Message>
 

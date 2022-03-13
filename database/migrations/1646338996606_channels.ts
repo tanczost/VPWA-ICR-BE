@@ -9,6 +9,7 @@ export default class Channels extends BaseSchema {
       table.string('name').unique()
       table.boolean('private').defaultTo(false)
       table.timestamp('last_activity', { useTz: true })
+      table.integer('owner_id').unsigned().references('users.id')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
