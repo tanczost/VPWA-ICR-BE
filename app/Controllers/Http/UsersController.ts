@@ -11,6 +11,25 @@ interface NewUser {
 }
 
 export default class UsersController {
+  public async getMyChannels(userId: number, { response }: HttpContextContract) {
+    const user = await User.findOrFail(userId)
+
+    if (user) {
+      await user.load('channels')
+      return {
+        userId,
+        channels: user.channels.map((channel) => {
+          return {
+            id: channel.id,
+            name: channel.name,
+            private: channel.private,
+          }
+        }),
+      }
+    } else {
+      response.status(404)
+    }
+  }
   public async index({}: HttpContextContract) {}
 
   public async create(userData: NewUser, { response }: HttpContextContract) {

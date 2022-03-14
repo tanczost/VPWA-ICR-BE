@@ -12,7 +12,6 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import Channel from './Channel'
 import Message from './Message'
 import Mention from './Mention'
-import ReadMessage from './ReadMessage'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -60,9 +59,6 @@ export default class User extends BaseModel {
 
   @hasMany(() => Mention)
   public mentiones: HasMany<typeof Mention>
-
-  @hasMany(() => ReadMessage)
-  public readMessages: HasMany<typeof ReadMessage>
 
   @manyToMany(() => Channel)
   public channels: ManyToMany<typeof Channel>

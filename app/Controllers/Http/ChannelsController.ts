@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Channel from 'App/Models/Channel'
 import { DateTime } from 'luxon'
+import InvitationsController, { NewInvitation } from './InvitationsController'
 
 interface NewChannel {
   name: string
@@ -12,21 +13,33 @@ export default class ChannelsController {
   public async addUser(
     channelId: number,
     userId: number,
-    requesterUserId: number | undefined,
+    requesterUserId: number,
     { response }: HttpContextContract
   ) {
     const channel = await Channel.findOrFail(channelId)
+
+    const newInvite: NewInvitation = {
+      inviterId: requesterUserId,
+      invitedId: userId,
+      channelId,
+    }
 
     if (channel.private) {
       if (requesterUserId !== channel.ownerId) {
         return response.status(403).send({ message: 'Only owner can add user to private channel' })
       }
-      await channel.related('users').attach([userId])
-      response.send({ message: 'User added to channel' })
+      try {
+        await new InvitationsController().create(newInvite)
+        response.send({ message: 'Invitation for user is successfully created' })
+      } catch (error) {
+        console.error(error)
+        response.status(404).send({ message: error.detail })
+      }
     } else {
       try {
-        await channel.related('users').attach([userId])
-        response.send({ message: 'User added to channel' })
+        // await channel.related('users').attach([userId])
+        await new InvitationsController().create(newInvite)
+        response.send({ message: 'Invitation for user is successfully created' })
       } catch (error) {
         console.error(error)
         response.status(404).send({ message: error.detail })

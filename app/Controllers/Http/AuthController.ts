@@ -10,9 +10,10 @@ export default class AuthController {
     // console.log(nickName, password)
 
     try {
-      const token = await auth.use('api').attempt(nickName, password, { hello: 'hello' })
+      const token = await auth.use('api').attempt(nickName, password)
+      console.log(auth.user?.serialize())
       // const token = await auth.use('api').attempt(nickName, password, {expiresIn: '2days'}) //token with expiration
-      return token
+      return { token, user: auth.user?.serialize() }
     } catch {
       return response.badRequest('Invalid credentials')
     }

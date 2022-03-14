@@ -6,6 +6,16 @@ Route.get('/show-user/', async (ctx) => {
   return new UserController().show(ctx)
 }).middleware('auth:api')
 
+Route.get('/user/:userId/my-channels/', async (ctx) => {
+  try {
+    const userIdtoInt = parseInt(ctx.params.userId)
+    return new UserController().getMyChannels(userIdtoInt, ctx)
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+})
+
 // Route.get('/create-user/', async (ctx) => {
 //   return new UserController().create(ctx)
 // })
