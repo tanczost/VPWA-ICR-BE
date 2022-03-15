@@ -10,6 +10,7 @@ interface NewChannel {
 }
 
 export default class ChannelsController {
+  // create invitation for user to channel
   public async addUser(
     channelId: number,
     userId: number,
@@ -37,13 +38,26 @@ export default class ChannelsController {
       }
     } else {
       try {
-        // await channel.related('users').attach([userId])
-        await new InvitationsController().create(newInvite)
+        const success = await new InvitationsController().create(newInvite)
+
+        if (!success) throw new Error('Invitation for user already exists')
+
         response.send({ message: 'Invitation for user is successfully created' })
       } catch (error) {
         console.error(error)
-        response.status(404).send({ message: error.detail })
+        response.status(404).send({ message: error.message })
       }
+    }
+  }
+
+  //adduser  to channel, create row in user_channel
+  public async attachUser(channelId: number, userId: number) {
+    try {
+      const channel = await Channel.findOrFail(channelId)
+      await channel.related('users').attach([userId])
+      return true
+    } catch (error) {
+      return false
     }
   }
 

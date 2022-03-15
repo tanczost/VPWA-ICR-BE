@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import Channel from './Channel'
 
 export default class Invitation extends BaseModel {
   @column({ isPrimary: true })
@@ -16,6 +17,9 @@ export default class Invitation extends BaseModel {
 
   @column()
   public channelId: number
+
+  @hasOne(() => Channel, { foreignKey: 'id', localKey: 'channelId', serializeAs: null })
+  public channel: HasOne<typeof Channel>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

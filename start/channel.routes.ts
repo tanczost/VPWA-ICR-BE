@@ -25,7 +25,6 @@ Route.post('/channel/', async (ctx) => {
     ctx.response.badRequest()
   }
 }).middleware('auth:api')
-// })
 
 // get channel's users
 Route.get('/channel/:channelId/users/', async (ctx) => {
@@ -36,9 +35,7 @@ Route.get('/channel/:channelId/users/', async (ctx) => {
     console.log(error)
     ctx.response.badRequest()
   }
-  // }).middleware('auth:api'
-})
-
+}).middleware('auth:api')
 // add user to channel
 Route.post('/channel/:channelId/add-user', async (ctx) => {
   try {

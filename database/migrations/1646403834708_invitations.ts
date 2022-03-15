@@ -8,7 +8,7 @@ export default class Invitations extends BaseSchema {
       table.increments('id')
       table.integer('inviter_id').notNullable().references('users.id')
       table.integer('invited_id').notNullable().references('users.id')
-      table.unique(['invited_id', 'inviter_id'])
+      table.unique(['invited_id', 'inviter_id', 'channel_id'])
       table.integer('channel_id').notNullable().references('channels.id')
       table.boolean('accepted').defaultTo(false)
 

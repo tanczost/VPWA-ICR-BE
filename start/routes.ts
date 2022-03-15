@@ -24,6 +24,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import './user.routes'
 import './auth.routes'
 import './channel.routes'
+import './invitation.routes'
 
 Route.get('/', async () => {
   return { hello: Env.get('PG_HOST') }
