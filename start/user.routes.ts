@@ -6,16 +6,14 @@ Route.get('/show-user/', async (ctx) => {
   return new UserController().show(ctx)
 }).middleware('auth:api')
 
-Route.get('/user/:userId/my-channels/', async (ctx) => {
+Route.get('/user/my-channels/', async (ctx) => {
   try {
-    const userIdtoInt = parseInt(ctx.params.userId)
-    return new UserController().getMyChannels(userIdtoInt, ctx)
+    if (ctx.auth.user?.id === undefined) {
+      return ctx.response.status(403).send({ message: 'Authentication failed' })
+    }
+    return new UserController().getMyChannels(ctx.auth.user.id, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
   }
-})
-
-// Route.get('/create-user/', async (ctx) => {
-//   return new UserController().create(ctx)
-// })
+}).middleware('auth:api')
