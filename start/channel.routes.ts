@@ -36,6 +36,7 @@ Route.get('/channel/:channelId/users/', async (ctx) => {
     ctx.response.badRequest()
   }
 }).middleware('auth:api')
+
 // add user to channel
 Route.post('/channel/:channelId/add-user', async (ctx) => {
   try {
@@ -58,4 +59,5 @@ Route.post('/channel/:channelId/add-user', async (ctx) => {
     ctx.response.badRequest()
   }
 }).middleware('auth:api')
-// })
+
+// TODO: delete channel,remove channel after 30d
