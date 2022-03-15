@@ -48,7 +48,26 @@ export default class InvitationsController {
     }
   }
 
-  public async decilineInvitation(invitationId, { response }: HttpContextContract) {}
+  public async declineInvitation(
+    invitationId: number,
+    requesterUserId: number,
+    { response }: HttpContextContract
+  ) {
+    const invitation = await Invitation.findOrFail(invitationId)
+
+    try {
+      if (invitation.invitedId !== requesterUserId)
+        throw new Error('You can accept only own invitations')
+    } catch (error) {
+      console.error(error)
+      response.status(400).send({ message: error.message })
+      return
+    }
+
+    invitation.delete()
+
+    response.send({ message: 'Invitation successfully declined' })
+  }
 
   public async getMyInvitations(userId: number) {
     const myInvitations = await Invitation.query()

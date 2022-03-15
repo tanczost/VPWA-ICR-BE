@@ -61,6 +61,7 @@ export default class ChannelsController {
     }
   }
 
+  //TODO check ifchannel is private and requester is in channel
   public async getUsers(channelId: number, { response }: HttpContextContract) {
     const channel = await Channel.findOrFail(channelId)
 
