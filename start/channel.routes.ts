@@ -60,4 +60,34 @@ Route.post('/channel/:channelId/add-user', async (ctx) => {
   }
 }).middleware('auth:api')
 
-// TODO: delete channel,remove channel after 30d
+Route.delete('/channel/:channelId/', async (ctx) => {
+  try {
+    const channelIdtoInt = parseInt(ctx.params.channelId)
+
+    if (ctx.auth.user?.id === undefined) {
+      return ctx.response.status(403).send({ message: 'Authentication failed' })
+    }
+
+    return new ChannelsController().delete(channelIdtoInt, ctx.auth.user.id, ctx)
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+}).middleware('auth:api')
+
+Route.get('/channel/:channelId/leave/', async (ctx) => {
+  try {
+    const channelIdtoInt = parseInt(ctx.params.channelId)
+
+    if (ctx.auth.user?.id === undefined) {
+      return ctx.response.status(403).send({ message: 'Authentication failed' })
+    }
+
+    return new ChannelsController().leave(channelIdtoInt, ctx.auth.user.id, ctx)
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+}).middleware('auth:api')
+
+// TODO: remove channel after 30d

@@ -17,13 +17,13 @@ export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
+  @column({ serializeAs: 'firstName' })
   public firstName: string
 
-  @column()
+  @column({ serializeAs: 'lastName' })
   public lastName: string
 
-  @column()
+  @column({ serializeAs: 'nickName' })
   public nickName: string
 
   @column()

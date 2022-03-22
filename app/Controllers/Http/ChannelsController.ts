@@ -81,8 +81,6 @@ export default class ChannelsController {
     }
   }
 
-  public async index({}: HttpContextContract) {}
-
   public async create(channelData: NewChannel, { response }: HttpContextContract) {
     const channel = new Channel()
 
@@ -97,13 +95,24 @@ export default class ChannelsController {
     }
   }
 
-  public async store({}: HttpContextContract) {}
+  //delete a channel
+  public async delete(channelId: number, userId: number, { response }: HttpContextContract) {
+    const channel = await Channel.findOrFail(channelId)
 
-  public async show({}: HttpContextContract) {}
+    if (userId !== channel.ownerId) {
+      return response.status(403).send({ message: 'Only owner can add user to private channel' })
+    }
 
-  public async edit({}: HttpContextContract) {}
+    await channel.related('users').detach()
+    channel.delete()
 
-  public async update({}: HttpContextContract) {}
+    response.status(200).send({ message: 'Channel deleted successfully' })
+  }
 
-  public async destroy({}: HttpContextContract) {}
+  public async leave(channelId: number, userId: number, { response }: HttpContextContract) {
+    const channel = await Channel.findOrFail(channelId)
+    await channel.related('users').detach([userId])
+
+    response.status(200).send({ message: 'You leave channel successfully' })
+  }
 }
