@@ -115,4 +115,7 @@ export default class ChannelsController {
 
     response.status(200).send({ message: 'You leave channel successfully' })
   }
+
+  //TODO: create kick table
+  public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
 }

@@ -22,10 +22,10 @@ export default class Channel extends BaseModel {
   @column()
   public private: boolean
 
-  @column()
+  @column({ serializeAs: 'lastActivity' })
   public lastActivity: DateTime
 
-  @column()
+  @column({ serializeAs: 'ownerId' })
   public ownerId: number
 
   @column.dateTime({ autoCreate: true })

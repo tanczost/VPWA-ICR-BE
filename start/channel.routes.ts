@@ -90,4 +90,21 @@ Route.get('/channel/:channelId/leave/', async (ctx) => {
   }
 }).middleware('auth:api')
 
+Route.post('/channel/:channelId/kick/', async (ctx) => {
+  try {
+    const channelIdtoInt = parseInt(ctx.params.channelId)
+
+    const kickUserSchema = schema.create({
+      userId: schema.number([rules.unsigned()]),
+    })
+
+    const payload = await ctx.request.validate({ schema: kickUserSchema })
+
+    return new ChannelsController().addKick(channelIdtoInt, payload.userId, ctx)
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+})
+
 // TODO: remove channel after 30d
