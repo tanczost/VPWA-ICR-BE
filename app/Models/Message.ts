@@ -7,6 +7,15 @@ export default class Message extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
+  @column()
+  public text: { text: string; mentions: string[] }
+
+  @column({ serializeAs: 'userId' })
+  public userId: number
+
+  @column({ serializeAs: 'channelId' })
+  public channelId: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

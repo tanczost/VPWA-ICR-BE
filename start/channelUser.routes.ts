@@ -1,5 +1,5 @@
 import Route from '@ioc:Adonis/Core/Route'
-import InvitationsController from 'App/Controllers/Http/InvitationsController'
+import ChannelUsersController from 'App/Controllers/Http/ChannelUsersController'
 
 Route.get('/invitations/get-my-invitations/', async (ctx) => {
   try {
@@ -9,7 +9,7 @@ Route.get('/invitations/get-my-invitations/', async (ctx) => {
       throw new Error('Invalid user id')
     }
 
-    return new InvitationsController().getMyInvitations(requesterUserId)
+    return new ChannelUsersController().getMyInvitations(requesterUserId)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
@@ -24,7 +24,7 @@ Route.get('/invitations/:invitationId/accept/', async (ctx) => {
       return ctx.response.status(403).send({ message: 'Authentication failed' })
     }
 
-    return new InvitationsController().acceptInvitation(invitationIdttoInt, ctx.auth.user.id, ctx)
+    return new ChannelUsersController().acceptInvitation(invitationIdttoInt, ctx.auth.user.id, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
@@ -39,7 +39,7 @@ Route.get('/invitations/:invitationId/decline/', async (ctx) => {
       return ctx.response.status(403).send({ message: 'Authentication failed' })
     }
 
-    return new InvitationsController().declineInvitation(invitationIdttoInt, ctx.auth.user.id, ctx)
+    return new ChannelUsersController().declineInvitation(invitationIdttoInt, ctx.auth.user.id, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()

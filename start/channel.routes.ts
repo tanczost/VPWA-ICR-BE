@@ -71,7 +71,7 @@ Route.delete('/channel/:channelId/', async (ctx) => {
     return new ChannelsController().delete(channelIdtoInt, ctx.auth.user.id, ctx)
   } catch (error) {
     console.log(error)
-    ctx.response.badRequest()
+    ctx.response.badRequest(error.message)
   }
 }).middleware('auth:api')
 
@@ -100,7 +100,7 @@ Route.post('/channel/:channelId/kick/', async (ctx) => {
 
     const payload = await ctx.request.validate({ schema: kickUserSchema })
 
-    return new ChannelsController().addKick(channelIdtoInt, payload.userId, ctx)
+    // return new ChannelsController().addKick(channelIdtoInt, payload.userId, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()

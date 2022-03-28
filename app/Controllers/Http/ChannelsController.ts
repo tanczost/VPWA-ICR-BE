@@ -1,7 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Channel from 'App/Models/Channel'
+import { ChannelUser } from 'App/Models/ChannelUser'
 import { DateTime } from 'luxon'
-import InvitationsController, { NewInvitation } from './InvitationsController'
 
 interface NewChannel {
   name: string
@@ -10,7 +10,7 @@ interface NewChannel {
 }
 
 export default class ChannelsController {
-  // create invitation for user to channel
+  // create invitation for user to channel, and  attach to channel
   public async addUser(
     channelId: number,
     userId: number,
@@ -19,45 +19,34 @@ export default class ChannelsController {
   ) {
     const channel = await Channel.findOrFail(channelId)
 
-    const newInvite: NewInvitation = {
-      inviterId: requesterUserId,
-      invitedId: userId,
-      channelId,
+    if (channel.private && requesterUserId !== channel.ownerId) {
+      return response.status(403).send({ message: 'Only owner can add user to private channel' })
     }
 
-    if (channel.private) {
-      if (requesterUserId !== channel.ownerId) {
-        return response.status(403).send({ message: 'Only owner can add user to private channel' })
-      }
-      try {
-        await new InvitationsController().create(newInvite)
-        response.send({ message: 'Invitation for user is successfully created' })
-      } catch (error) {
-        console.error(error)
-        response.status(404).send({ message: error.detail })
-      }
-    } else {
-      try {
-        const success = await new InvitationsController().create(newInvite)
-
-        if (!success) throw new Error('Invitation for user already exists')
-
-        response.send({ message: 'Invitation for user is successfully created' })
-      } catch (error) {
-        console.error(error)
-        response.status(404).send({ message: error.message })
-      }
-    }
-  }
-
-  //adduser  to channel, create row in user_channel
-  public async attachUser(channelId: number, userId: number) {
     try {
-      const channel = await Channel.findOrFail(channelId)
       await channel.related('users').attach([userId])
-      return true
+
+      const invitation = await ChannelUser.query()
+        .where('user_id', userId)
+        .where('channel_id', channelId)
+        .first()
+
+      if (!invitation) {
+        throw new Error('Could not find invitation')
+      }
+
+      invitation
+        .merge({
+          invitedById: requesterUserId,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        })
+        .save()
+
+      response.status(200).send({ message: 'Invitation successfully created' })
     } catch (error) {
-      return false
+      console.log(error.message)
+      response.status(400).send({ message: error.message })
     }
   }
 
@@ -67,14 +56,32 @@ export default class ChannelsController {
 
     if (channel) {
       await channel.load('users')
-      return {
-        channelId,
-        users: channel.users.map((user) => {
+
+      const usersRaw = await Promise.all(
+        channel.users.map(async (user) => {
+          const invitation = await ChannelUser.query()
+            .where('user_id', user.id)
+            .where('channel_id', channelId)
+            .first()
+
+          if (!invitation) {
+            throw new Error('Could not find invitation')
+          }
+
+          if (!invitation.accepted) {
+            return null
+          }
+
           return {
             username: user.nickName,
             state: user.state,
           }
-        }),
+        })
+      )
+
+      return {
+        channelId,
+        users: usersRaw.filter((user) => user !== null),
       }
     } else {
       response.status(404)
@@ -85,7 +92,6 @@ export default class ChannelsController {
     const channel = new Channel()
 
     try {
-      console.log(DateTime.now())
       await channel.fill({ ...channelData, lastActivity: DateTime.now() }).save()
       await channel.related('users').attach([channelData.ownerId])
       return { message: 'Channel is created' }
@@ -117,5 +123,5 @@ export default class ChannelsController {
   }
 
   //TODO: create kick table
-  public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
+  // public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
 }

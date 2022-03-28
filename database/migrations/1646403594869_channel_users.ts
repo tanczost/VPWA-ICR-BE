@@ -9,10 +9,11 @@ export default class ChannelUsers extends BaseSchema {
 
       table.integer('user_id').unsigned().references('users.id')
       table.integer('channel_id').unsigned().references('channels.id')
+      table.integer('invited_by_id').unsigned().references('users.id')
+      table.boolean('accepted').defaultTo(false)
       table.unique(['user_id', 'channel_id'])
 
       table.timestamp('last_seen', { useTz: true })
-      table.integer('kick_number').defaultTo(0)
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
