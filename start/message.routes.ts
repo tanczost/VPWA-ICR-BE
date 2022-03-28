@@ -30,10 +30,11 @@ Route.post('/message/', async (ctx) => {
 }).middleware('auth:api')
 
 //get messages from the  channel
-Route.get('/message/:channelId/:page/', async (ctx) => {
+Route.get('/channel/:channelId/messages', async (ctx) => {
   try {
     const channelIdtoInt = parseInt(ctx.params.channelId)
-    const pageInt = parseInt(ctx.request.param('page', 1))
+    const { page } = ctx.request.qs()
+    console.log(page)
 
     if (ctx.auth.user?.id === undefined) {
       return ctx.response.status(403).send({ message: 'Authentication failed' })
@@ -41,7 +42,7 @@ Route.get('/message/:channelId/:page/', async (ctx) => {
 
     const payload = {
       channelId: channelIdtoInt,
-      page: pageInt,
+      page: page === undefined ? 1 : parseInt(page),
       userId: ctx.auth.user.id,
     }
 

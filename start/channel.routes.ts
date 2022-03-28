@@ -29,8 +29,13 @@ Route.post('/channel/', async (ctx) => {
 // get channel's users
 Route.get('/channel/:channelId/users/', async (ctx) => {
   try {
+    const requesterUserId = ctx.auth.user?.id
+
+    if (!requesterUserId) {
+      throw new Error('Invalid user id')
+    }
     const channelIdtoInt = parseInt(ctx.params.channelId)
-    return new ChannelsController().getUsers(channelIdtoInt, ctx)
+    return new ChannelsController().getUsers(channelIdtoInt, requesterUserId, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()

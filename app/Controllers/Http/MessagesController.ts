@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
 import Channel from 'App/Models/Channel'
+import { ChannelUser } from 'App/Models/ChannelUser'
 import Message from 'App/Models/Message'
 import User from 'App/Models/User'
 
@@ -20,14 +21,21 @@ export default class MessagesController {
   public async index({}: HttpContextContract) {}
 
   public async create(newMessageData: NewMessage, { response }: HttpContextContract) {
-    const message = new Message()
-
     try {
+      const message = new Message()
+
+      const userChannelState = await ChannelUser.query()
+        .where('user_id', newMessageData.userId)
+        .where('channel_id', newMessageData.channelId)
+        .where('accepted', true)
+
+      if (!userChannelState.length) throw new Error('You are not in this  channel')
+
       await message.fill(newMessageData).save()
       return { message: 'Message was successfully created.' }
     } catch (error) {
       console.error(error)
-      response.status(400).send({ message: error.detail })
+      response.status(400).send({ message: error.message })
     }
   }
 
@@ -35,39 +43,42 @@ export default class MessagesController {
     { channelId, page, userId }: MessagesFromChannel,
     { response }: HttpContextContract
   ) {
-    const channel = await Channel.findOrFail(channelId)
+    try {
+      //check if user is in the channel
+      const userChannelState = await ChannelUser.query()
+        .where('user_id', userId)
+        .where('channel_id', channelId)
+        .where('accepted', true)
 
-    //check if user is in the private channel
-    if (channel.private) {
-      await channel.load('users')
+      if (!userChannelState.length) throw new Error('You are not in this  channel')
 
-      if (channel.users.map((user) => user.id).includes(userId)) {
-        response.status(403).send('This is a private channel')
+      const messagesRaw = await Database.from('messages')
+        .where({ channel_id: channelId })
+        .orderBy('created_at')
+        .paginate(page, 20)
+
+      const messages = await Promise.all(
+        messagesRaw.all().map(async (message) => {
+          const user = await User.findOrFail(message.user_id)
+
+          return {
+            id: message.id,
+            text: message.text,
+            channelId: message.channel_id,
+            user: user,
+          }
+        })
+      )
+
+      return {
+        channelId,
+        page,
+        lastPage: messagesRaw.lastPage,
+        messages,
       }
-    }
-
-    const messagesRaw = await Database.from('messages')
-      .where({ channel_id: channelId })
-      .paginate(page, 20)
-
-    const messages = await Promise.all(
-      messagesRaw.all().map(async (message) => {
-        const user = await User.findOrFail(message.user_id)
-
-        return {
-          id: message.id,
-          text: message.text,
-          channelId: message.channel_id,
-          user: user,
-        }
-      })
-    )
-
-    return {
-      channelId,
-      page,
-      lastPage: messagesRaw.lastPage,
-      messages,
+    } catch (error) {
+      console.error(error)
+      response.status(400).send({ message: error.message })
     }
   }
 

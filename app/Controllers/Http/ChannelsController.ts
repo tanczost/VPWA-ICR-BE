@@ -50,11 +50,16 @@ export default class ChannelsController {
     }
   }
 
-  //TODO: check ifchannel is private and requester is in channel
-  public async getUsers(channelId: number, { response }: HttpContextContract) {
+  public async getUsers(channelId: number, userId: number, { response }: HttpContextContract) {
     const channel = await Channel.findOrFail(channelId)
+    try {
+      const userChannelState = await ChannelUser.query()
+        .where('user_id', userId)
+        .where('channel_id', channelId)
+        .where('accepted', true)
 
-    if (channel) {
+      if (!userChannelState.length) throw new Error('You are not in this  channel')
+
       await channel.load('users')
 
       const usersRaw = await Promise.all(
@@ -83,8 +88,9 @@ export default class ChannelsController {
         channelId,
         users: usersRaw.filter((user) => user !== null),
       }
-    } else {
-      response.status(404)
+    } catch (error) {
+      console.error(error)
+      response.status(400).send({ message: error.message })
     }
   }
 
@@ -121,6 +127,19 @@ export default class ChannelsController {
 
     response.status(200).send({ message: 'You leave channel successfully' })
   }
+
+  public async kickByOwner(
+    channelId: number,
+    userId: number,
+    ownerId: number,
+    { response }: HttpContextContract
+  ) {}
+
+  public async bannedFromChannel(
+    channelId: number,
+    userId: number,
+    { response }: HttpContextContract
+  ) {}
 
   //TODO: create kick table
   // public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
