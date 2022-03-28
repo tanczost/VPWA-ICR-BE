@@ -94,7 +94,7 @@ export default class ChannelsController {
     try {
       await channel.fill({ ...channelData, lastActivity: DateTime.now() }).save()
       await channel.related('users').attach([channelData.ownerId])
-      return { message: 'Channel is created' }
+      return { message: 'Channel is created', channelId: channel.id }
     } catch (error) {
       console.error(error)
       response.status(400).send({ message: error.detail })
