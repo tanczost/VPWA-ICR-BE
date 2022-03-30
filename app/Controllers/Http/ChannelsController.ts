@@ -142,5 +142,6 @@ export default class ChannelsController {
   ) {}
 
   //TODO: create kick table
+  //TODO: add state to owner
   // public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
 }
