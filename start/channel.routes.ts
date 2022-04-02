@@ -1,6 +1,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import ChannelsController from 'App/Controllers/Http/ChannelsController'
+import KicksController from 'App/Controllers/Http/KicksController'
 
 // create a new channel
 Route.post('/channel/', async (ctx) => {
@@ -88,7 +89,7 @@ Route.get('/channel/:channelId/leave/', async (ctx) => {
       return ctx.response.status(403).send({ message: 'Authentication failed' })
     }
 
-    return new ChannelsController().leave(channelIdtoInt, ctx.auth.user.id, ctx)
+    return new ChannelsController().leave(channelIdtoInt, ctx.auth.user.id)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
@@ -105,11 +106,11 @@ Route.post('/channel/:channelId/kick/', async (ctx) => {
 
     const payload = await ctx.request.validate({ schema: kickUserSchema })
 
-    // return new ChannelsController().addKick(channelIdtoInt, payload.userId, ctx)
+    return new KicksController().addKick(channelIdtoInt, payload.userId, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
   }
-})
+}).middleware('auth:api')
 
 // TODO: remove channel after 30d

@@ -121,27 +121,19 @@ export default class ChannelsController {
     response.status(200).send({ message: 'Channel deleted successfully' })
   }
 
-  public async leave(channelId: number, userId: number, { response }: HttpContextContract) {
+  public async leave(channelId: number, userId: number) {
     const channel = await Channel.findOrFail(channelId)
     await channel.related('users').detach([userId])
-
-    response.status(200).send({ message: 'You leave channel successfully' })
   }
 
-  public async kickByOwner(
-    channelId: number,
-    userId: number,
-    ownerId: number,
-    { response }: HttpContextContract
-  ) {}
+  public async isUserinChannel(channelId: number, userId: number): Promise<boolean> {
+    const userInChannel = await ChannelUser.query()
+      .where('user_id', userId)
+      .where('channel_id', channelId)
+      .where('accepted', true)
 
-  public async bannedFromChannel(
-    channelId: number,
-    userId: number,
-    { response }: HttpContextContract
-  ) {}
+    return !userInChannel
+  }
 
-  //TODO: create kick table
   //TODO: add state to owner
-  // public async addKick(channelId: number, userId: number, { response }: HttpContextContract) {}
 }
