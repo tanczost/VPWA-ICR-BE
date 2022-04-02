@@ -7,10 +7,6 @@ Route.post('/login/', async (ctx) => {
   return new AuthController().login(ctx)
 })
 
-Route.get('/me/', async (ctx) => {
-  return new AuthController().me(ctx)
-}).middleware('auth:api')
-
 Route.post('/logout/', async (ctx) => {
   return new AuthController().logout(ctx)
 })

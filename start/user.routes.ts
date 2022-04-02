@@ -1,9 +1,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 import UserController from '../app/Controllers/Http/UsersController'
 
-Route.get('/show-user/', async (ctx) => {
-  console.log('showuser')
-  return new UserController().show(ctx)
+Route.get('/me/', async (ctx) => {
+  return new UserController().me(ctx)
 }).middleware('auth:api')
 
 Route.get('/user/my-channels/', async (ctx) => {

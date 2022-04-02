@@ -3,7 +3,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 export default class AuthController {
-  public async login({ auth, request, response }: HttpContextContract) {
+  public async login({ auth, request }: HttpContextContract) {
     const nickName = request.input('nickName')
     const password = request.input('password')
 
@@ -12,7 +12,6 @@ export default class AuthController {
 
   public async verifyToken({ auth }: HttpContextContract) {
     await auth.use('api').authenticate()
-    // console.log(auth.use('api').user!)
   }
 
   public async logout({ auth }: HttpContextContract) {
@@ -20,9 +19,5 @@ export default class AuthController {
     return {
       revoked: true,
     }
-  }
-
-  public async me({ auth }: HttpContextContract) {
-    return auth.user?.serialize()
   }
 }
