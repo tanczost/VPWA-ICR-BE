@@ -7,16 +7,7 @@ export default class AuthController {
     const nickName = request.input('nickName')
     const password = request.input('password')
 
-    // console.log(nickName, password)
-
-    try {
-      const token = await auth.use('api').attempt(nickName, password)
-      console.log(auth.user?.serialize())
-      // const token = await auth.use('api').attempt(nickName, password, {expiresIn: '2days'}) //token with expiration
-      return { token, user: auth.user?.serialize() }
-    } catch {
-      return response.badRequest('Invalid credentials')
-    }
+    return auth.use('api').attempt(nickName, password)
   }
 
   public async verifyToken({ auth }: HttpContextContract) {
@@ -29,5 +20,9 @@ export default class AuthController {
     return {
       revoked: true,
     }
+  }
+
+  public async me({ auth }: HttpContextContract) {
+    return auth.user?.serialize()
   }
 }
