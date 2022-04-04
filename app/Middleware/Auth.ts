@@ -78,17 +78,17 @@ export default class AuthMiddleware {
   /**
    * Handle ws namespace connection
    */
-  public async wsHandle(
-    { auth }: WsContextContract,
-    next: () => Promise<void>,
-    customGuards: (keyof GuardsList)[]
-  ) {
-    /**
-     * Uses the user defined guards or the default guard mentioned in
-     * the config file
-     */
-    const guards = customGuards.length ? customGuards : [auth.name]
-    await this.authenticate(auth, guards)
-    await next()
-  }
+  // public async wsHandle(
+  //   { auth }: WsContextContract,
+  //   next: () => Promise<void>,
+  //   customGuards: (keyof GuardsList)[]
+  // ) {
+  //   /**
+  //    * Uses the user defined guards or the default guard mentioned in
+  //    * the config file
+  //    */
+  //   const guards = customGuards.length ? customGuards : [auth.name]
+  //   await this.authenticate(auth, guards)
+  //   await next()
+  // }
 }

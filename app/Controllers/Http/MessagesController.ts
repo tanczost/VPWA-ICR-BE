@@ -1,6 +1,5 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
-import Channel from 'App/Models/Channel'
 import { ChannelUser } from 'App/Models/ChannelUser'
 import Message from 'App/Models/Message'
 import User from 'App/Models/User'
@@ -18,8 +17,6 @@ export interface MessagesFromChannel {
 }
 
 export default class MessagesController {
-  public async index({}: HttpContextContract) {}
-
   public async create(newMessageData: NewMessage, { response }: HttpContextContract) {
     try {
       const message = new Message()
@@ -81,14 +78,4 @@ export default class MessagesController {
       response.status(400).send({ message: error.message })
     }
   }
-
-  public async store({}: HttpContextContract) {}
-
-  public async show({}: HttpContextContract) {}
-
-  public async edit({}: HttpContextContract) {}
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }

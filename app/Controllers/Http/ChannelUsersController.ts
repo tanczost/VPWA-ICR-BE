@@ -7,7 +7,7 @@ export interface NewInvitation {
   invitedId: number
   channelId: number
 }
-export default class InvitationsController {
+export default class ChannelUserController {
   public async acceptInvitation(
     invitationId: number,
     requesterUserId: number,
