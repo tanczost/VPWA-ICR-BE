@@ -12,7 +12,6 @@ export default class KicksController {
 
     const isKickerInChannel = await new ChannelsController().isUserinChannel(auth.user?.id, userId)
 
-    console.log(isKickerInChannel)
     if (isKickerInChannel) {
       return response.status(403).send({ message: 'You are not in the channel' })
     }
@@ -20,8 +19,9 @@ export default class KicksController {
     await kick.fill({ userId, channelId, kickedById: auth.user?.id }).save()
 
     const kickCount = await this.countKicks(userId, channelId)
+    const isOwner = await new ChannelsController().isOwnerOfChannel(auth.user?.id, channelId)
 
-    if (kickCount === 3) {
+    if (kickCount === 3 || isOwner) {
       await Kick.query().where('user_id', userId).where('channel_id', channelId).delete()
       await new ChannelsController().leave(channelId, userId)
       response.send({ message: `User with id: ${userId} is banned` })

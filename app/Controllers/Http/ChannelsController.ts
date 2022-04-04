@@ -135,5 +135,11 @@ export default class ChannelsController {
     return !userInChannel
   }
 
+  public async isOwnerOfChannel(userId: number, channelId: number): Promise<boolean> {
+    const channel = await Channel.findOrFail(channelId)
+
+    return channel.ownerId === userId
+  }
+
   //TODO: add state to owner
 }
