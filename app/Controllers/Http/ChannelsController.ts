@@ -79,7 +79,6 @@ export default class ChannelsController {
 
           return {
             username: user.nickName,
-            state: user.state,
           }
         })
       )
