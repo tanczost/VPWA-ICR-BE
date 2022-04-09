@@ -1,5 +1,5 @@
 import type { WsContextContract } from '@ioc:Ruby184/Socket.IO/WsContext'
-import MessageRepositoryContract from 'app/Repositories/MessageRepository'
+import type { MessageRepositoryContract } from '@ioc:Repositories/MessageRepository'
 import { inject } from '@adonisjs/core/build/standalone'
 
 // inject repository from container to controller constructor
@@ -13,11 +13,11 @@ export default class MessageController {
   constructor(private messageRepository: MessageRepositoryContract) {}
 
   public async loadMessages({ params }: WsContextContract) {
-    return this.messageRepository.getAll(params.name)
+    return this.messageRepository.getAll(params.channelId)
   }
 
   public async addMessage({ params, socket, auth }: WsContextContract, content: string) {
-    const message = await this.messageRepository.create(params.name, auth.user!.id, content)
+    const message = await this.messageRepository.create(params.channelId, auth.user!.id, content)
     // broadcast message to other users in channel
     socket.broadcast.emit('message', message)
     // return message to sender

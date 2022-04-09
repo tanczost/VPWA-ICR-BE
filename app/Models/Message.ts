@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, belongsTo, BelongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Channel from './Channel'
 import User from './User'
 
@@ -25,6 +25,8 @@ export default class Message extends BaseModel {
   @hasOne(() => Channel)
   public channel: HasOne<typeof Channel>
 
-  @hasOne(() => User)
-  public author: HasOne<typeof User>
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  public author: BelongsTo<typeof User>
 }
