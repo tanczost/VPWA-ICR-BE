@@ -98,7 +98,16 @@ export default class ChannelsController {
 
     try {
       await channel.fill({ ...channelData, lastActivity: DateTime.now() }).save()
-      await channel.related('users').attach([channelData.ownerId])
+
+      const pivotRow = new ChannelUser()
+      pivotRow
+        .fill({
+          userId: channelData.ownerId,
+          channelId: channel.id,
+          invitedById: channelData.ownerId,
+          accepted: true,
+        })
+        .save()
       return { message: 'Channel is created', channelId: channel.id }
     } catch (error) {
       console.error(error)
