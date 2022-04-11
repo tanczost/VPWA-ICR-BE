@@ -49,6 +49,6 @@ export default class UsersController {
   }
 
   public async me({ auth }: HttpContextContract) {
-    return auth.user?.serialize()
+    return { ...auth.user?.serialize(), invitations: [] }
   }
 }

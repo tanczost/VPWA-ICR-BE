@@ -1,5 +1,7 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
+import Channel from './Channel'
+import User from './User'
 
 export class ChannelUser extends BaseModel {
   public static table = 'channel_user'
@@ -18,6 +20,21 @@ export class ChannelUser extends BaseModel {
 
   @column()
   public accepted: boolean
+
+  @belongsTo(() => User, {
+    foreignKey: 'userId',
+  })
+  public user: BelongsTo<typeof User>
+
+  @belongsTo(() => User, {
+    foreignKey: 'invitedById',
+  })
+  public author: BelongsTo<typeof User>
+
+  @belongsTo(() => Channel, {
+    foreignKey: 'channelId',
+  })
+  public channel: BelongsTo<typeof Channel>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
