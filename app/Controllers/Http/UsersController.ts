@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 // import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
+import ChannelUserController from './ChannelUsersController'
 
 interface NewUser {
   nickName: string
@@ -49,6 +50,10 @@ export default class UsersController {
   }
 
   public async me({ auth }: HttpContextContract) {
-    return { ...auth.user?.serialize(), invitations: [] }
+    if (!auth.user) {
+      return
+    }
+    const invitations = await new ChannelUserController().getMyInvitations(auth.user?.id)
+    return { ...auth.user?.serialize(), invitations }
   }
 }

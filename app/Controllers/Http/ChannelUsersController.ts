@@ -55,24 +55,19 @@ export default class ChannelUserController {
 
   public async getMyInvitations(userId: number) {
     const myInvitations = await ChannelUser.query()
-      .where('user_id', userId)
+      .where('userId', userId)
       .where('accepted', false)
+      .preload('channel')
+      .preload('author')
       .orderBy('created_at', 'asc')
 
-    const result = await Promise.all(
-      myInvitations.map(async (invitation: ChannelUser) => {
-        const channel = await Channel.findOrFail(invitation.channelId)
-        const serializedInvite = {
-          ...invitation.serialize(),
-          channelName: channel.name,
-        }
-
-        return serializedInvite
-      })
-    )
-
-    return {
-      myInvitations: result,
-    }
+    const result = myInvitations.map((invitation) => {
+      return {
+        id: invitation.id,
+        channelName: invitation.channel.name,
+        invitedByNickName: invitation.author.nickName,
+      }
+    })
+    return result
   }
 }
