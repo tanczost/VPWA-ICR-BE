@@ -16,6 +16,7 @@ interface Invitation {
   channelName: string
   invitedByNickName: string
   id: number
+  channelId: number
 }
 @inject(['Repositories/MessageRepository'])
 export default class ChannelController {
@@ -78,6 +79,7 @@ export default class ChannelController {
         id: invitation.id,
         channelName: invitation.channel.name,
         invitedByNickName: userRequester.nickName,
+        channelId: invitation.channel.id,
       }
       socket.to(`user${user.id}`).emit('invite', serializedInvite)
       socket.emit('Invitation successfully created')

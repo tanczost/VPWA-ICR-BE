@@ -15,16 +15,23 @@ export default class ChannelUserController {
   ) {
     try {
       const invitation = await ChannelUser.findOrFail(invitationId)
+      await invitation.load('channel')
 
       if (invitation.userId !== requesterUserId)
         throw new Error('You can accept only own invitations')
       if (invitation.accepted) throw new Error('This invitation has already been accepted')
 
-      invitation.merge({ accepted: true }).save()
+      await invitation.merge({ accepted: true }).save()
+      await invitation.channel.load('ownerUser')
 
-      invitation.delete()
-
-      response.send({ message: 'Invitation successfully accepted' })
+      response.send({
+        id: invitation.channel.id,
+        name: invitation.channel.name,
+        private: invitation.channel.private,
+        ownerUsername: invitation.channel.ownerUser.nickName,
+        users: [],
+        messages: [],
+      })
     } catch (error) {
       console.error(error)
       response.status(400).send({ message: error.message })
@@ -66,6 +73,7 @@ export default class ChannelUserController {
         id: invitation.id,
         channelName: invitation.channel.name,
         invitedByNickName: invitation.author.nickName,
+        channelId: invitation.channel.id,
       }
     })
     return result
