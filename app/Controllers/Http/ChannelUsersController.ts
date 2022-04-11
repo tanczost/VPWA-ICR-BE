@@ -1,5 +1,4 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Channel from 'App/Models/Channel'
 import { ChannelUser } from 'App/Models/ChannelUser'
 
 export interface NewInvitation {
