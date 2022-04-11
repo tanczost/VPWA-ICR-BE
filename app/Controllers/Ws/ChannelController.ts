@@ -58,14 +58,13 @@ export default class ChannelController {
         .where('channel_id', channelId)
         .preload('channel')
         .preload('user')
-        .preload('author')
         .first()
 
       if (!invitation) {
         throw new Error('Could not find invitation')
       }
 
-      invitation
+      await invitation
         .merge({
           invitedById: requesterUserId,
           createdAt: DateTime.now(),
@@ -73,15 +72,18 @@ export default class ChannelController {
         })
         .save()
 
+      const userRequester = await User.findOrFail(requesterUserId)
+
       const serializedInvite: Invitation = {
         id: invitation.id,
         channelName: invitation.channel.name,
-        invitedByNickName: invitation.author.nickName,
+        invitedByNickName: userRequester.nickName,
       }
       socket.to(`user${user.id}`).emit('invite', serializedInvite)
       socket.emit('Invitation successfully created')
     } catch (error) {
       console.log(error.message)
+      socket.emit(error.message)
     }
   }
 }
