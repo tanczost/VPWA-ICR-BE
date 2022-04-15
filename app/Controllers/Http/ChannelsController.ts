@@ -2,6 +2,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Channel from 'App/Models/Channel'
 import { ChannelUser } from 'App/Models/ChannelUser'
 import { DateTime } from 'luxon'
+import ChannelUserController from './ChannelUsersController'
 
 interface NewChannel {
   name: string
@@ -16,11 +17,12 @@ export default class ChannelsController {
     userId: number,
     requesterUserId: number,
     { response }: HttpContextContract
-  ) {
+  ): Promise<number | void> {
     const channel = await Channel.findOrFail(channelId)
 
     if (channel.private && requesterUserId !== channel.ownerId) {
-      return response.status(403).send({ message: 'Only owner can add user to private channel' })
+      response.status(403).send({ message: 'Only owner can add user to private channel' })
+      return
     }
 
     try {
@@ -44,6 +46,7 @@ export default class ChannelsController {
         .save()
 
       response.status(200).send({ message: 'Invitation successfully created' })
+      return invitation.id
     } catch (error) {
       console.log(error.message)
       response.status(400).send({ message: error.message })
@@ -110,8 +113,13 @@ export default class ChannelsController {
         .save()
       return { message: 'Channel is created', channelId: channel.id }
     } catch (error) {
+      if (parseInt(error.code) === 23505) {
+        response.status(409)
+      } else {
+        response.status(400)
+      }
       console.error(error)
-      response.status(400).send({ message: error.detail })
+      response.send({ message: error.detail })
     }
   }
 
@@ -149,5 +157,16 @@ export default class ChannelsController {
     return channel.ownerId === userId
   }
 
-  //TODO: add state to owner
+  public async joinInPublicChannel(
+    userId: number,
+    channelName: string,
+    context: HttpContextContract
+  ) {
+    const channel = await Channel.findByOrFail('name', channelName)
+    const inviteId = await this.addUser(channel.id, userId, userId, context)
+    if (!inviteId) {
+      return
+    }
+    await new ChannelUserController().acceptInvitation(inviteId, userId, context)
+  }
 }

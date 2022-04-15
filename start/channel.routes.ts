@@ -27,6 +27,24 @@ Route.post('/channel/', async (ctx) => {
   }
 }).middleware('auth:api')
 
+// join into public channel
+Route.get('/channel/:channelName/join/', async (ctx) => {
+  try {
+    if (ctx.auth.user?.id === undefined) {
+      return ctx.response.status(403).send({ message: 'Authentication failed' })
+    }
+
+    return new ChannelsController().joinInPublicChannel(
+      ctx.auth.user?.id,
+      ctx.params.channelName,
+      ctx
+    )
+  } catch (error) {
+    console.log(error)
+    ctx.response.badRequest()
+  }
+}).middleware('auth:api')
+
 // get channel's users
 Route.get('/channel/:channelId/users/', async (ctx) => {
   try {
