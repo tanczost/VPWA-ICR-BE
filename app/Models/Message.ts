@@ -8,7 +8,7 @@ export default class Message extends BaseModel {
   public id: number
 
   @column()
-  public text: { text: string; mentions: string[] }
+  public content: { text: string; mentions: string[] }
 
   @column({ serializeAs: 'userId' })
   public userId: number

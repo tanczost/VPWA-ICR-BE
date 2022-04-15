@@ -6,7 +6,7 @@ export default class Messages extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.json('text').notNullable()
+      table.json('content').notNullable()
       table.integer('channel_id').notNullable().references('channels.id')
       table.integer('user_id').notNullable().references('users.id')
 

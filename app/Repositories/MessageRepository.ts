@@ -23,7 +23,7 @@ export default class MessageRepository implements MessageRepositoryContract {
         const user = await User.findOrFail(message.user_id)
         return {
           id: message.id,
-          text: message.text,
+          content: message.content,
           channelId: message.channel_id,
           userId: message.userId,
           createdAt: DateTime.fromISO(new Date(message.created_at).toISOString()).toFormat(
@@ -41,7 +41,7 @@ export default class MessageRepository implements MessageRepositoryContract {
         } as SerializedMessage
       })
     )
-    return messages as SerializedMessage[]
+    return messages.reverse() as SerializedMessage[]
   }
 
   public async create(
@@ -50,9 +50,16 @@ export default class MessageRepository implements MessageRepositoryContract {
     content: string
   ): Promise<SerializedMessage> {
     const channel = await Channel.findOrFail(channelId)
-    const message = await channel
-      .related('messages')
-      .create({ userId, text: { text: content, mentions: [] } })
+    const pattern = /\B@[a-z0-9_-]+/gi
+    const found: string[] = content.match(pattern) ?? []
+
+    const message = await channel.related('messages').create({
+      userId,
+      content: {
+        text: content,
+        mentions: [...found.map((m: string) => m.substring(1))],
+      },
+    })
     await message.load('author')
 
     return message.serialize() as SerializedMessage

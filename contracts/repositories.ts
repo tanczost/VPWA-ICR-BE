@@ -3,7 +3,10 @@
 declare module '@ioc:Repositories/MessageRepository' {
   export interface SerializedMessage {
     userId: number
-    text: string
+    content: {
+      text: string
+      mentions: string
+    }
     channelId: number
     createdAt: string
     updatedAt: string
