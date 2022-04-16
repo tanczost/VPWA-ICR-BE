@@ -11,6 +11,7 @@ export default class ChannelUsers extends BaseSchema {
       table.integer('channel_id').unsigned().references('channels.id')
       table.integer('invited_by_id').unsigned().references('users.id')
       table.boolean('accepted').defaultTo(false)
+      table.boolean('banned').defaultTo(false)
       table.unique(['user_id', 'channel_id'])
 
       table.timestamp('last_seen', { useTz: true })

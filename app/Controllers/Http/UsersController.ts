@@ -35,7 +35,6 @@ export default class UsersController {
       channels,
     }
   }
-  public async index({}: HttpContextContract) {}
 
   public async create(userData: NewUser, { response }: HttpContextContract) {
     const user = new User()

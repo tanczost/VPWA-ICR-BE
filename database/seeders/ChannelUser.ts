@@ -5,6 +5,18 @@ export default class ChannelSeeder extends BaseSeeder {
   public async run() {
     await ChannelUser.createMany([
       {
+        userId: 5,
+        channelId: 3,
+        invitedById: 2,
+        accepted: true,
+      },
+      {
+        userId: 4,
+        channelId: 3,
+        invitedById: 2,
+        accepted: true,
+      },
+      {
         userId: 3,
         channelId: 1,
         invitedById: 2,

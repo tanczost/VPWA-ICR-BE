@@ -21,7 +21,7 @@ export default class ChannelSeeder extends BaseSeeder {
         name: 'channel3',
         private: false,
         lastActivity: DateTime.now(),
-        ownerId: 1,
+        ownerId: 2,
       },
       {
         name: 'channel4',

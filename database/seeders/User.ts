@@ -33,6 +33,13 @@ export default class UserSeeder extends BaseSeeder {
         email: 'user3@adonisjs.com',
         password: '123456',
       },
+      {
+        nickName: 'user4',
+        lastName: 'Lastname',
+        firstName: 'Firstname',
+        email: 'user4@adonisjs.com',
+        password: '123456',
+      },
     ])
   }
 }

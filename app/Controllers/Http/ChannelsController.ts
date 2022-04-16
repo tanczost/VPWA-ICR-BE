@@ -37,7 +37,7 @@ export default class ChannelsController {
         throw new Error('Could not find invitation')
       }
 
-      invitation
+      await invitation
         .merge({
           invitedById: requesterUserId,
           createdAt: DateTime.now(),
@@ -53,6 +53,7 @@ export default class ChannelsController {
     }
   }
 
+  // get members of the channel
   public async getUsers(channelId: number, userId: number, { response }: HttpContextContract) {
     const channel = await Channel.findOrFail(channelId)
     try {
@@ -60,6 +61,7 @@ export default class ChannelsController {
         .where('user_id', userId)
         .where('channel_id', channelId)
         .where('accepted', true)
+        .where('banned', false)
 
       if (!userChannelState.length) throw new Error('You are not in this  channel')
 
@@ -70,6 +72,7 @@ export default class ChannelsController {
           const invitation = await ChannelUser.query()
             .where('user_id', user.id)
             .where('channel_id', channelId)
+            .where('accepted', true)
             .first()
 
           if (!invitation) {
@@ -96,6 +99,7 @@ export default class ChannelsController {
     }
   }
 
+  // create new channel
   public async create(channelData: NewChannel, { response }: HttpContextContract) {
     const channel = new Channel()
 
@@ -123,12 +127,12 @@ export default class ChannelsController {
     }
   }
 
-  //delete a channel
+  //delete a channel [handle over socket, broadcast to everyone in channel that channel is deleted]
   public async delete(channelId: number, userId: number, { response }: HttpContextContract) {
     const channel = await Channel.findOrFail(channelId)
 
     if (userId !== channel.ownerId) {
-      return response.status(403).send({ message: 'Only owner can add user to private channel' })
+      return response.status(403).send({ message: 'Only owner can delete channel' })
     }
 
     await channel.related('users').detach()
@@ -137,26 +141,31 @@ export default class ChannelsController {
     response.status(200).send({ message: 'Channel deleted successfully' })
   }
 
+  // leave the channel [if userId == ownerId call deleteChannel]
   public async leave(channelId: number, userId: number) {
     const channel = await Channel.findOrFail(channelId)
     await channel.related('users').detach([userId])
   }
 
+  // check if user is in the channel
   public async isUserinChannel(channelId: number, userId: number): Promise<boolean> {
     const userInChannel = await ChannelUser.query()
       .where('user_id', userId)
       .where('channel_id', channelId)
       .where('accepted', true)
+      .where('banned', false)
 
     return !userInChannel
   }
 
+  //check if user is the owner
   public async isOwnerOfChannel(userId: number, channelId: number): Promise<boolean> {
     const channel = await Channel.findOrFail(channelId)
 
     return channel.ownerId === userId
   }
 
+  // join into public channel without invite
   public async joinInPublicChannel(
     userId: number,
     channelName: string,

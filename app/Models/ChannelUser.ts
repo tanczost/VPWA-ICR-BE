@@ -21,6 +21,9 @@ export class ChannelUser extends BaseModel {
   @column()
   public accepted: boolean
 
+  @column()
+  public banned: boolean
+
   @belongsTo(() => User, {
     foreignKey: 'userId',
   })
