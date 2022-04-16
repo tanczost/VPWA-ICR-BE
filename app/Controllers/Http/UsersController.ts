@@ -1,6 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { UserRepositoryContract } from '@ioc:Repositories/UserRepository'
+import Channel from 'App/Models/Channel'
 // import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import User from 'App/Models/User'
 import ChannelUserController from './ChannelUsersController'
 
 interface NewUser {
@@ -12,24 +13,11 @@ interface NewUser {
 }
 
 export default class UsersController {
+  constructor(private userRepository: UserRepositoryContract) {}
+
   public async getMyChannels(userId: number, {}: HttpContextContract) {
-    const user = await User.findOrFail(userId)
-    await user.load('channels')
+    const channels = await this.userRepository.findUsersChannel(userId)
 
-    const channels = await Promise.all(
-      user.channels.map(async (channel) => {
-        const user = await User.findOrFail(channel.ownerId)
-
-        return {
-          id: channel.id,
-          name: channel.name,
-          private: channel.private,
-          ownerUsername: user.nickName,
-        }
-      })
-    )
-
-    await user.load('channels')
     return {
       userId,
       channels,
@@ -37,10 +25,8 @@ export default class UsersController {
   }
 
   public async create(userData: NewUser, { response }: HttpContextContract) {
-    const user = new User()
-
     try {
-      await user.fill(userData).save()
+      await this.userRepository.create(userData)
       return { message: 'User is saved' }
     } catch (error) {
       console.error(error)
