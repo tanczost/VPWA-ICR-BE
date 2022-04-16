@@ -56,6 +56,7 @@ declare module '@ioc:Repositories/UserRepository' {
 
 declare module '@ioc:Repositories/ChannelRepository' {
   import Channel from 'App/Models/Channel'
+  import { ChannelUser } from 'App/Models/ChannelUser'
   export interface NewChannel {
     name: string
     private?: boolean
@@ -65,8 +66,15 @@ declare module '@ioc:Repositories/ChannelRepository' {
     create(channelData: NewChannel): Promise<Channel>
     quitChannel(channelId: number, userId: number): Promise<Channel>
     leave(channelId: number, userId: number): Promise<void>
+    addOwnerIntoChannel(channelData: NewChannel, channelId: number): Promise<void>
     isUserinChannel(channelId: number, userId: number): Promise<boolean>
     isOwnerOfChannel(userId: number, channelId: number): Promise<boolean>
+    loadChannelWithUsers(channelId: number): Promise<Channel>
+    getInvite(channelId: number, userId: number): Promise<ChannelUser | null>
+    createInvite(channelId: number, userId: number, requesterUserId: number): Promise<ChannelUser>
+    acceptInvite(invitationId: number, userId: number): Promise<ChannelUser>
+    declineInvitation(invitationId: number, userId: number): Promise<void>
+    loadMyInvitations(userId: number): Promise<ChannelUser[]>
   }
 
   const ChannelRepository: ChannelRepositoryContract

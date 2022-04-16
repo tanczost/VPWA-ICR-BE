@@ -2,6 +2,7 @@ import Route from '@ioc:Adonis/Core/Route'
 import UsersController from 'App/Controllers/Http/UsersController'
 import AuthController from '../app/Controllers/Http/AuthController'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import UserRepository from '@ioc:Repositories/UserRepository'
 
 Route.post('/login/', async (ctx) => {
   return new AuthController().login(ctx)
@@ -21,7 +22,7 @@ Route.post('/registration/', async (ctx) => {
       password: schema.string({}, [rules.minLength(6)]),
     })
     const payload = await ctx.request.validate({ schema: userSchema })
-    return new UsersController().create(payload, ctx)
+    return new UsersController(UserRepository).create(payload, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()

@@ -1,14 +1,16 @@
 import { inject } from '@adonisjs/core/build/standalone'
+import { ChannelRepositoryContract } from '@ioc:Repositories/ChannelRepository'
 import { MessageRepositoryContract } from '@ioc:Repositories/MessageRepository'
 import { WsContextContract } from '@ioc:Ruby184/Socket.IO/WsContext'
-import { ChannelUser } from 'App/Models/ChannelUser'
 import Kick from 'App/Models/Kick'
 import User from 'App/Models/User'
-import ChannelsController from '../Http/ChannelsController'
 
-@inject(['Repositories/MessageRepository'])
+@inject(['Repositories/MessageRepository', 'Repositories/ChannelRepository'])
 export default class KicksController {
-  constructor(private messageRepository: MessageRepositoryContract) {}
+  constructor(
+    private messageRepository: MessageRepositoryContract,
+    private channelRepository: ChannelRepositoryContract
+  ) {}
 
   public async addKick({ auth, socket, params }: WsContextContract, userNick: string) {
     const kick = new Kick()
@@ -21,21 +23,16 @@ export default class KicksController {
     await kick.fill({ userId: user.id, channelId, kickedById: auth.user?.id }).save()
 
     const kickCount = await this.countKicks(user.id, params.channelId)
-    const isOwner = await new ChannelsController().isOwnerOfChannel(auth.user?.id, params.channelId)
+    const isOwner = await this.channelRepository.isOwnerOfChannel(auth.user.id, params.channelId)
 
     if (kickCount === 3 || isOwner) {
       //clear kick counter
       await Kick.query().where('user_id', user.id).where('channel_id', channelId).delete()
 
-      const userChannelState = await ChannelUser.query()
-        .where('user_id', user.id)
-        .where('channel_id', channelId)
-        .where('accepted', true)
-        .where('banned', false)
-        .firstOrFail()
+      const userChannelState = await this.channelRepository.getInvite(channelId, user.id)
 
       // set ban for user
-      await userChannelState.merge({ banned: true }).save()
+      await userChannelState?.merge({ banned: true }).save()
 
       const content = `${user.nickName} is banned from this channel.`
       const message = await this.messageRepository.create(params.channelId, 1, content)

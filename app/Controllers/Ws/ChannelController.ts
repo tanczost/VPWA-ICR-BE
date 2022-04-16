@@ -6,6 +6,7 @@ import { inject } from '@adonisjs/core/build/standalone'
 import { ChannelUser } from 'App/Models/ChannelUser'
 import { DateTime } from 'luxon'
 import Message from 'App/Models/Message'
+import { ChannelRepositoryContract } from '@ioc:Repositories/ChannelRepository'
 // inject repository from container to controller constructor
 // we do so because we can extract database specific storage to another class
 // and also to prevent big controller methods doing everything
@@ -19,16 +20,19 @@ interface Invitation {
   id: number
   channelId: number
 }
-@inject(['Repositories/MessageRepository'])
+@inject(['Repositories/MessageRepository', 'Repositories/ChannelRepository'])
 export default class ChannelController {
-  constructor(private messageRepository: MessageRepositoryContract) {}
+  constructor(
+    private messageRepository: MessageRepositoryContract,
+    private channelRepository: ChannelRepositoryContract
+  ) {}
 
   public async leave(context: WsContextContract) {
     if (context.auth.user === undefined) {
       throw new Error('Bad auth')
     }
 
-    const isOwnerOfChannel = await this.isOwnerOfChannel(
+    const isOwnerOfChannel = await this.channelRepository.isOwnerOfChannel(
       context.auth.user?.id,
       context.params.channelId
     )
@@ -38,8 +42,7 @@ export default class ChannelController {
       return
     }
 
-    const channel = await Channel.findOrFail(context.params.channelId)
-    await channel.related('users').detach([context.auth.user?.id])
+    this.channelRepository.leave(context.params.channelId, context.auth.user?.id)
 
     const user = await User.findOrFail(context.auth.user?.id)
     const content = `${user.nickName} leave the channel.`
@@ -53,20 +56,22 @@ export default class ChannelController {
       throw new Error('Bad auth')
     }
 
-    const isOwnerOfChannel = await this.isOwnerOfChannel(auth.user?.id, params.channelId)
+    const isOwnerOfChannel = await this.channelRepository.isOwnerOfChannel(
+      auth.user?.id,
+      params.channelId
+    )
 
     if (!isOwnerOfChannel) {
       return
     }
 
     const user = await User.findByOrFail('nickName', userNick)
-    const channel = await Channel.findOrFail(params.channelId)
-    await channel.related('users').detach([user.id])
+    this.channelRepository.leave(params.channelId, user.id)
 
     const content = `${user.nickName} leave the channel.`
     const message = await this.messageRepository.create(params.channelId, 1, content)
     socket.broadcast.emit('leave', message, user.nickName)
-    socket.to(`user${user.id}`).emit('ban', channel.id)
+    socket.to(`user${user.id}`).emit('ban', params.channelId)
     return message
   }
 
@@ -121,21 +126,11 @@ export default class ChannelController {
     }
   }
 
-  public async isOwnerOfChannel(userId: number, channelId: number): Promise<boolean> {
-    const channel = await Channel.findOrFail(channelId)
-
-    return channel.ownerId === userId
-  }
-
   public async quit({ auth, socket, params }: WsContextContract) {
-    const channel = await Channel.findOrFail(params.channelId)
-
-    // if user is not the owner, do nothing
-    if (auth.user?.id !== channel.ownerId) {
+    if (!auth.user) {
       return
     }
-
-    await channel.related('users').detach()
+    const channel = await this.channelRepository.quitChannel(params.channelId, auth.user?.id)
     await Message.query().where('channelId', channel.id).delete()
     channel.delete()
     socket.broadcast.emit('delete', channel.id)

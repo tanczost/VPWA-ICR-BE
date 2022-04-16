@@ -8,7 +8,7 @@ import { inject } from '@adonisjs/core/build/standalone'
 // controler method just gets data (validates it) and calls repository
 // also we can then test standalone repository without controller
 // implementation is bind into container inside providers/AppProvider.ts
-@inject(['Repositories/MessageRepository'])
+@inject(['Repositories/MessageRepository', 'Repositories/UserRepository'])
 export default class MessageController {
   constructor(private messageRepository: MessageRepositoryContract) {}
 

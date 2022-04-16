@@ -1,7 +1,6 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import ChannelRepository from '@ioc:Repositories/ChannelRepository'
 import { UserRepositoryContract } from '@ioc:Repositories/UserRepository'
-import Channel from 'App/Models/Channel'
-// import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import ChannelUserController from './ChannelUsersController'
 
 interface NewUser {
@@ -38,7 +37,9 @@ export default class UsersController {
     if (!auth.user) {
       return
     }
-    const invitations = await new ChannelUserController().getMyInvitations(auth.user?.id)
+    const invitations = await new ChannelUserController(ChannelRepository).getMyInvitations(
+      auth.user?.id
+    )
     return { ...auth.user?.serialize(), invitations }
   }
 }
