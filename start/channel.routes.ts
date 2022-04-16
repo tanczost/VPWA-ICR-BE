@@ -59,4 +59,6 @@ Route.get('/channel/:channelId/users/', async (ctx) => {
     console.log(error)
     ctx.response.badRequest()
   }
-}).middleware('auth:api')
+})
+  .middleware('auth:api')
+  .middleware('channel:api')
