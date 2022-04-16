@@ -47,7 +47,7 @@ declare module '@ioc:Repositories/UserRepository' {
   }
   export interface UserRepositoryContract {
     create(userData: NewUser): Promise<void>
-    findUsersChannel(userId: number): Promise<UsersChannels[]>
+    findUsersChannel(userId: number): Promise<(UsersChannels | null)[]>
   }
 
   const UserRepository: UserRepositoryContract
