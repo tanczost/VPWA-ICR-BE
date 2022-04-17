@@ -22,6 +22,13 @@ Ws.namespace('channels/:channelId')
   .on('kick', 'KickController.addKick')
   .on('revoke', 'ChannelController.revoke')
   .on('quit', 'ChannelController.quit')
+  .on('isTyping', ({ socket }, message: string, userNick: string) => {
+    if (message === '') {
+      socket.broadcast.emit('stopTyping', { userNick, message })
+    } else {
+      socket.broadcast.emit('isTyping', { userNick, message })
+    }
+  })
 
 Ws.namespace('/notifications')
   .connected(({ socket, auth }) => {
