@@ -15,21 +15,21 @@ services:
     ports:
       - 6379:6379
 
-  adonis_app:
-    image: adonis_app
-    restart: always
-    depends_on:
-      - postgres
-      - redis
-    build:
-      context: .
-      target: dependencies
-    ports:
-      - 3333:3333
-    env_file:
-      - .env.prod
-    volumes:
-      - ./:/home/node/app
-    command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
+  # adonis_app:
+  #   image: adonis_app
+  #   restart: always
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   build:
+  #     context: .
+  #     target: dependencies
+  #   ports:
+  #     - 3333:3333
+  #   env_file:
+  #     - .env.prod
+  #   volumes:
+  #     - ./:/home/node/app
+  #   command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
