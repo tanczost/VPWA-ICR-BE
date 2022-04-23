@@ -1,4 +1,3 @@
-#!/bin/bash
 ARG NODE_IMAGE=node:16.13.1-alpine
 
 FROM $NODE_IMAGE AS base
