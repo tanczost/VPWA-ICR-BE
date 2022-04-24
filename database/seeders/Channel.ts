@@ -6,26 +6,14 @@ export default class ChannelSeeder extends BaseSeeder {
   public async run() {
     await Channel.createMany([
       {
-        name: 'channel1',
-        private: true,
+        name: 'General channel.',
+        private: false,
         lastActivity: DateTime.now(),
         ownerId: 1,
       },
       {
-        name: 'channel2',
+        name: "User1's channel",
         private: true,
-        lastActivity: DateTime.now(),
-        ownerId: 2,
-      },
-      {
-        name: 'channel3',
-        private: false,
-        lastActivity: DateTime.now(),
-        ownerId: 2,
-      },
-      {
-        name: 'channel4',
-        private: false,
         lastActivity: DateTime.now(),
         ownerId: 2,
       },

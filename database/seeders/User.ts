@@ -6,7 +6,7 @@ export default class UserSeeder extends BaseSeeder {
   public async run() {
     await User.createMany([
       {
-        nickName: 'Odin',
+        nickName: 'Odin master of swapper',
         lastName: 'Odin',
         firstName: 'Odin',
         email: 'odin@adonisjs.com',

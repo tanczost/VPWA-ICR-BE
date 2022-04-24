@@ -7,7 +7,7 @@ export default class MessageSeeder extends BaseSeeder {
       await Message.create({
         content: { text: `Message ${i}`, mentions: [] },
         userId: Math.random() < 0.5 ? 2 : 3,
-        channelId: 3,
+        channelId: 2,
       })
     }
   }

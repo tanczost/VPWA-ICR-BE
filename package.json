@@ -8,7 +8,7 @@
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
-    "tanczi": "node ace db:wipe; node ace migration:run; node ace db:seed;"
+    "seed": "node ace db:wipe; node ace migration:run; node ace db:seed;"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.4.1",
