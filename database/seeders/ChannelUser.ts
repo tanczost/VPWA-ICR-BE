@@ -29,6 +29,12 @@ export default class ChannelSeeder extends BaseSeeder {
         accepted: true,
       },
       {
+        userId: 2,
+        channelId: 2,
+        invitedById: 2,
+        accepted: true,
+      },
+      {
         userId: 3,
         channelId: 2,
         invitedById: 2,

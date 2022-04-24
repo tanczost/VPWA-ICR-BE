@@ -1,6 +1,7 @@
 import Route from '@ioc:Adonis/Core/Route'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import ChannelRepository from '@ioc:Repositories/ChannelRepository'
+import MessageRepository from '@ioc:Repositories/MessageRepository'
 import ChannelsController from 'App/Controllers/Http/ChannelsController'
 
 // create a new channel
@@ -20,7 +21,7 @@ Route.post('/channel/', async (ctx) => {
       ownerId: ctx.auth.user?.id,
     }
 
-    return new ChannelsController(ChannelRepository).create(payload, ctx)
+    return new ChannelsController(ChannelRepository, MessageRepository).create(payload, ctx)
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()
@@ -34,7 +35,7 @@ Route.get('/channel/:channelName/join/', async (ctx) => {
       return ctx.response.status(403).send({ message: 'Authentication failed' })
     }
 
-    return new ChannelsController(ChannelRepository).joinInPublicChannel(
+    return new ChannelsController(ChannelRepository, MessageRepository).joinInPublicChannel(
       ctx.auth.user?.id,
       ctx.params.channelName,
       ctx
@@ -54,7 +55,10 @@ Route.get('/channel/:channelId/users/', async (ctx) => {
       throw new Error('Invalid user id')
     }
     const channelIdtoInt = parseInt(ctx.params.channelId)
-    return new ChannelsController(ChannelRepository).getUsers(channelIdtoInt, ctx)
+    return new ChannelsController(ChannelRepository, MessageRepository).getUsers(
+      channelIdtoInt,
+      ctx
+    )
   } catch (error) {
     console.log(error)
     ctx.response.badRequest()

@@ -16,7 +16,7 @@ export default class Message extends BaseModel {
   @column({ serializeAs: 'channelId' })
   public channelId: number
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })

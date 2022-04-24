@@ -2,6 +2,7 @@
 
 // container binding. See providers/AppProvider.ts for how we are binding the implementation
 declare module '@ioc:Repositories/MessageRepository' {
+  import { DateTime } from 'luxon'
   export interface SerializedMessage {
     userId: number
     content: {
@@ -9,8 +10,8 @@ declare module '@ioc:Repositories/MessageRepository' {
       mentions: string
     }
     channelId: number
-    createdAt: string
-    updatedAt: string
+    createdAt: DateTime
+    updatedAt: DateTime
     id: number
     author: {
       id: number
@@ -46,7 +47,7 @@ declare module '@ioc:Repositories/UserRepository' {
     ownerUsername: string
   }
   export interface UserRepositoryContract {
-    create(userData: NewUser): Promise<void>
+    create(userData: NewUser): Promise<User>
     findUsersChannel(userId: number): Promise<(UsersChannels | null)[]>
   }
 

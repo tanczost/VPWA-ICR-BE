@@ -26,12 +26,8 @@ export default class MessageRepository implements MessageRepositoryContract {
           content: message.content,
           channelId: message.channel_id,
           userId: message.userId,
-          createdAt: DateTime.fromISO(new Date(message.created_at).toISOString()).toFormat(
-            'yyyy LLL dd'
-          ),
-          updatedAt: DateTime.fromISO(new Date(message.updated_at).toISOString()).toFormat(
-            'yyyy LLL dd'
-          ),
+          createdAt: DateTime.fromISO(new Date(message.updated_at).toISOString()),
+          updatedAt: DateTime.fromISO(new Date(message.updated_at).toISOString()),
           author: {
             id: user.id,
             nickName: user.nickName,

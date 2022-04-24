@@ -4,9 +4,10 @@ import { ChannelUser } from 'App/Models/ChannelUser'
 import User from 'App/Models/User'
 
 export default class UserRepository implements UserRepositoryContract {
-  public async create(userData: NewUser): Promise<void> {
+  public async create(userData: NewUser): Promise<User> {
     const user = new User()
     await user.fill(userData).save()
+    return user
   }
 
   public async findUsersChannel(userId: number): Promise<(UsersChannels | null)[]> {

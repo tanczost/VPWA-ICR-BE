@@ -1,10 +1,14 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ChannelRepositoryContract, NewChannel } from '@ioc:Repositories/ChannelRepository'
+import { MessageRepositoryContract } from '@ioc:Repositories/MessageRepository'
 import Channel from 'App/Models/Channel'
 import ChannelUserController from './ChannelUsersController'
 
 export default class ChannelsController {
-  constructor(private channelRepository: ChannelRepositoryContract) {}
+  constructor(
+    private channelRepository: ChannelRepositoryContract,
+    private messageRepository: MessageRepositoryContract
+  ) {}
   // create invitation for user to channel, and  attach to channel
   public async addUser(
     channelId: number,
@@ -56,9 +60,11 @@ export default class ChannelsController {
   public async create(channelData: NewChannel, { response }: HttpContextContract) {
     try {
       const channel = await this.channelRepository.create(channelData)
+      await channel.load('ownerUser')
 
       await this.channelRepository.addOwnerIntoChannel(channelData, channel.id)
-
+      const content = `${channel.ownerUser.nickName} created a new channel.`
+      await this.messageRepository.create(channel.id, 1, content)
       return { message: 'Channel is created', channelId: channel.id }
     } catch (error) {
       if (parseInt(error.code) === 23505) {

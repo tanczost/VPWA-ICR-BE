@@ -1,6 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ChannelRepository from '@ioc:Repositories/ChannelRepository'
+import MessageRepository from '@ioc:Repositories/MessageRepository'
 import { UserRepositoryContract } from '@ioc:Repositories/UserRepository'
+import ChannelsController from './ChannelsController'
 import ChannelUserController from './ChannelUsersController'
 
 interface NewUser {
@@ -23,13 +25,18 @@ export default class UsersController {
     }
   }
 
-  public async create(userData: NewUser, { response }: HttpContextContract) {
+  public async create(userData: NewUser, ctx: HttpContextContract) {
     try {
-      await this.userRepository.create(userData)
+      const newUser = await this.userRepository.create(userData)
+      await new ChannelsController(ChannelRepository, MessageRepository).joinInPublicChannel(
+        newUser.id,
+        'General_channel',
+        ctx
+      )
       return { message: 'User is saved' }
     } catch (error) {
       console.error(error)
-      response.status(400).send({ message: error.detail })
+      ctx.response.status(400).send({ message: error.detail })
     }
   }
 
