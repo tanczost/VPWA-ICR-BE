@@ -1,24 +1,21 @@
-ARG NODE_IMAGE=node:16.13.1-alpine
-
-FROM $NODE_IMAGE AS base
-RUN apk --no-cache add dumb-init
-RUN mkdir -p /home/node/app && chown node:node /home/node/app
-WORKDIR /home/node/app
-USER node
-RUN mkdir tmp
-
-FROM base AS dependencies
-COPY --chown=node:node ./package*.json ./
-RUN npm ci
-COPY --chown=node:node . .
-
-FROM dependencies AS build
+# Include the latest node image
+FROM node:lts
+# Aliases setup for container folders
+ARG SERVER="/slek-server"
+ARG SERVER_src="."
+ARG BUILD="/slek-server/build"
+ENV PORTS="3333"
+# Set the working directory inside the container to server module
+WORKDIR ${SERVER}
+# Expose port outside container
+EXPOSE ${PORTS}
+# Copy server module
+COPY ${SERVER_src} ${SERVER}
+# Build TS files
 RUN node ace build --production
-
-FROM base AS production
-COPY --chown=node:node ./package*.json ./
+# Update workdir
+WORKDIR ${BUILD}
+# Install production dependencies
 RUN npm ci --production
-COPY --chown=node:node --from=build /home/node/app/build .
-EXPOSE 3333
-
-CMD [ "dumb-init", "node", "server.js" ]
+# Start server module inside the container
+CMD ["node", "server.js"]
