@@ -10,39 +10,31 @@ services:
     ports:
       - 5432:5432
 
-  redis:
-    image: redis
-    container_name: redis
-    ports:
-      - 6379:6379
-    volumes:
-        - redis-data:/data
+  # swapper_be:
+  #   image: swapper_be
+  #   restart: always
+  #   env_file:
+  #     - .env.prod
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #   build:
+  #     context: .
+  #     target: dependencies
+  #   ports:
+  #     - 3333:3333
+  #   volumes:
+  #     - ./:/home/node/app
 
-  swapper_be:
-    image: swapper_be
-    restart: always
-    env_file:
-      - .env.prod
-    depends_on:
-      - postgres
-      - redis
-    build:
-      context: .
-      target: dependencies
-    ports:
-      - 3333:3333
-    volumes:
-      - ./:/home/node/app
-
-  swapper_fe:
-    image: swapper_fe
-    build: .
-    depends_on:
-      - swapper_be
-    ports:
-      - 8080:8080
-    environment:
-      - API_URL=http://localhost:3333
+  # swapper_fe:
+  #   image: swapper_fe
+  #   build: .
+  #   depends_on:
+  #     - swapper_be
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - API_URL=http://localhost:3333
 
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
