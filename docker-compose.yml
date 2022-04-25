@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   database:
     image: "postgres" # use latest official postgres version
@@ -16,6 +17,7 @@ services:
       - 6379:6379
     volumes:
         - redis-data:/data
+
   swapper_be:
     image: swapper_be
     restart: always
@@ -31,6 +33,7 @@ services:
       - 3333:3333
     volumes:
       - ./:/home/node/app
+
   swapper_fe:
     image: swapper_fe
     build: .
@@ -40,6 +43,7 @@ services:
       - 8080:8080
     environment:
       - API_URL=http://localhost:3333
+
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
   redis-data:
