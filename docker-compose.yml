@@ -10,6 +10,14 @@ services:
     ports:
       - 5432:5432
 
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+        - redis-data:/data
+
   # swapper_be:
   #   image: swapper_be
   #   restart: always

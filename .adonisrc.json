@@ -33,6 +33,7 @@
     "@adonisjs/core",
     "@adonisjs/lucid",
     "@adonisjs/auth",
+    "@adonisjs/redis",
     "@ruby184/adonis-socket.io"
   ],
   "aceProviders": ["@adonisjs/repl"]
