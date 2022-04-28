@@ -44,9 +44,10 @@ export default class UsersController {
     if (!auth.user) {
       return
     }
-    const invitations = await new ChannelUserController(ChannelRepository).getMyInvitations(
-      auth.user?.id
-    )
+    const invitations = await new ChannelUserController(
+      ChannelRepository,
+      MessageRepository
+    ).getMyInvitations(auth.user?.id)
     return { ...auth.user?.serialize(), invitations }
   }
 }

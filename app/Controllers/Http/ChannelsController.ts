@@ -1,7 +1,10 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ChannelRepositoryContract, NewChannel } from '@ioc:Repositories/ChannelRepository'
 import { MessageRepositoryContract } from '@ioc:Repositories/MessageRepository'
+import Ws from '@ioc:Ruby184/Socket.IO/Ws'
 import Channel from 'App/Models/Channel'
+import User from 'App/Models/User'
+import socket from 'Config/socket'
 import ChannelUserController from './ChannelUsersController'
 
 export default class ChannelsController {
@@ -89,10 +92,9 @@ export default class ChannelsController {
     if (!inviteId) {
       return
     }
-    await new ChannelUserController(this.channelRepository).acceptInvitation(
-      inviteId,
-      userId,
-      context
-    )
+    await new ChannelUserController(
+      this.channelRepository,
+      this.messageRepository
+    ).acceptInvitation(inviteId, userId, context)
   }
 }

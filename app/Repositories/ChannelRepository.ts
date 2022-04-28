@@ -36,7 +36,7 @@ export default class ChannelRepository implements ChannelRepositoryContract {
       .where('accepted', true)
       .where('banned', false)
 
-    return !userInChannel
+    return !!userInChannel
   }
 
   //check if user is the owner

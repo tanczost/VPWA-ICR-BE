@@ -1,5 +1,8 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ChannelRepositoryContract } from '@ioc:Repositories/ChannelRepository'
+import Ws from '@ioc:Ruby184/Socket.IO/Ws'
+import User from 'App/Models/User'
+import MessageRepository from 'App/Repositories/MessageRepository'
 
 export interface NewInvitation {
   inviterId: number
@@ -7,7 +10,10 @@ export interface NewInvitation {
   channelId: number
 }
 export default class ChannelUserController {
-  constructor(private channelRepository: ChannelRepositoryContract) {}
+  constructor(
+    private channelRepository: ChannelRepositoryContract,
+    private messageRepository: MessageRepository
+  ) {}
   public async acceptInvitation(
     invitationId: number,
     requesterUserId: number,
@@ -24,6 +30,15 @@ export default class ChannelUserController {
         users: [],
         messages: [],
       })
+
+      const user = await User.findOrFail(requesterUserId)
+      const content = `${user.nickName} joined the channel.`
+      const message = await this.messageRepository.create(invitation.channel.id, 1, content)
+
+      Ws.io.of(`/channels/${invitation.channel.id}`).emit('message', message)
+      Ws.io
+        .of(`/channels/${invitation.channel.id}`)
+        .emit('addUser', { username: user.nickName, state: 1 }, invitation.channel.id)
     } catch (error) {
       console.error(error)
       response.status(400).send({ message: error.message })

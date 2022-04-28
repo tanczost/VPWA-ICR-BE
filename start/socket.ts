@@ -36,3 +36,8 @@ Ws.namespace('/notifications')
     socket.join(`user${userId}`)
   })
   .on('addMember', 'ChannelController.addMember')
+
+Ws.namespace('/')
+  .connected('ActivityController.onConnected')
+  .disconnected('ActivityController.onDisconnected')
+  .on('changeStatus', 'ActivityController.changeStatus')
