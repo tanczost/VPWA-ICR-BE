@@ -12,6 +12,7 @@ export default class Users extends BaseSchema {
       table.string('email').unique().notNullable()
       table.string('password').notNullable()
       table.boolean('notify').defaultTo(true)
+      table.string('remember_me_token').nullable()
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

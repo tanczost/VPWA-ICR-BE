@@ -10,13 +10,13 @@ services:
     ports:
       - 5432:5432
 
-  redis:
-    image: redis
-    container_name: redis
-    ports:
-      - 6379:6379
-    volumes:
-        - redis-data:/data
+  # redis:
+  #   image: redis
+  #   container_name: redis
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #       - redis-data:/data
 
   # swapper_be:
   #   image: swapper_be
@@ -46,4 +46,4 @@ services:
 
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
-  redis-data:
+  # redis-data:
