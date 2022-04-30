@@ -7,7 +7,7 @@ declare module '@ioc:Repositories/MessageRepository' {
     userId: number
     content: {
       text: string
-      mentions: string
+      mentions: string[]
     }
     channelId: number
     createdAt: DateTime
@@ -22,8 +22,9 @@ declare module '@ioc:Repositories/MessageRepository' {
   }
 
   export interface MessageRepositoryContract {
-    getMessagesFromChannel(channelId: number, page: number): Promise<SerializedMessage[]>
+    getMessagesFromChannel(channelId: number, date?: DateTime): Promise<SerializedMessage[]>
     create(channelId: number, userId: number, content: string): Promise<SerializedMessage>
+    getNewMeesagesFromChannel(channelId: number, date: DateTime): Promise<SerializedMessage[]>
   }
 
   const MessageRepository: MessageRepositoryContract

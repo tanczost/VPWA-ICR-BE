@@ -1,33 +1,69 @@
-import Database from '@ioc:Adonis/Lucid/Database'
 import type {
   MessageRepositoryContract,
   SerializedMessage,
 } from '@ioc:Repositories/MessageRepository'
 import Channel from 'App/Models/Channel'
+import Message from 'App/Models/Message'
 import User from 'App/Models/User'
 import { DateTime } from 'luxon'
 
 export default class MessageRepository implements MessageRepositoryContract {
   public async getMessagesFromChannel(
     channelId: number,
-    page?: number
+    date?: DateTime
   ): Promise<SerializedMessage[]> {
-    const pageNumber = page ?? 1
-    const messagesRaw = await Database.from('messages')
+    const dateFrom = date ?? DateTime.now().toISO()
+
+    const messagesRaw = await Message.query()
       .where({ channel_id: channelId })
+      .where('created_at', '<', dateFrom.toString())
       .orderBy('created_at', 'desc')
-      .paginate(pageNumber, 20)
+      .limit(20)
 
     const messages = await Promise.all(
-      messagesRaw.all().map(async (message) => {
-        const user = await User.findOrFail(message.user_id)
+      messagesRaw.map(async (message) => {
+        const user = await User.findOrFail(message.userId)
         return {
           id: message.id,
           content: message.content,
-          channelId: message.channel_id,
+          channelId: message.channelId,
           userId: message.userId,
-          createdAt: DateTime.fromISO(new Date(message.updated_at).toISOString()),
-          updatedAt: DateTime.fromISO(new Date(message.updated_at).toISOString()),
+          createdAt: message.createdAt,
+          updatedAt: message.updatedAt,
+          author: {
+            id: user.id,
+            nickName: user.nickName,
+            createdAt: user.createdAt.toFormat('yyyy LLL dd'),
+            updatedAt: user.updatedAt.toFormat('yyyy LLL dd'),
+          },
+        } as SerializedMessage
+      })
+    )
+    return messages.reverse() as SerializedMessage[]
+  }
+
+  public async getNewMeesagesFromChannel(
+    channelId: number,
+    date: DateTime
+  ): Promise<SerializedMessage[]> {
+    const dateFrom = date
+
+    const messagesRaw = await Message.query()
+      .where({ channel_id: channelId })
+      .where('created_at', '>', dateFrom.toString())
+      .orderBy('created_at', 'desc')
+      .limit(20)
+
+    const messages = await Promise.all(
+      messagesRaw.map(async (message) => {
+        const user = await User.findOrFail(message.userId)
+        return {
+          id: message.id,
+          content: message.content,
+          channelId: message.channelId,
+          userId: message.userId,
+          createdAt: message.createdAt,
+          updatedAt: message.updatedAt,
           author: {
             id: user.id,
             nickName: user.nickName,

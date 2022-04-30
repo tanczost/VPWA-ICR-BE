@@ -1,6 +1,7 @@
 import type { WsContextContract } from '@ioc:Ruby184/Socket.IO/WsContext'
 import type { MessageRepositoryContract } from '@ioc:Repositories/MessageRepository'
 import { inject } from '@adonisjs/core/build/standalone'
+import { DateTime } from 'luxon'
 
 // inject repository from container to controller constructor
 // we do so because we can extract database specific storage to another class
@@ -12,8 +13,12 @@ import { inject } from '@adonisjs/core/build/standalone'
 export default class MessageController {
   constructor(private messageRepository: MessageRepositoryContract) {}
 
-  public async getMessagesFromChannel({ params }: WsContextContract, page: number) {
-    return this.messageRepository.getMessagesFromChannel(params.channelId, page)
+  public async getMessagesFromChannel({ params }: WsContextContract, date?: DateTime) {
+    return this.messageRepository.getMessagesFromChannel(params.channelId, date)
+  }
+
+  public async getNewMeesagesFromChannel({ params }: WsContextContract, date: DateTime) {
+    return this.messageRepository.getNewMeesagesFromChannel(params.channelId, date)
   }
 
   public async addMessage({ params, socket, auth }: WsContextContract, content: string) {
