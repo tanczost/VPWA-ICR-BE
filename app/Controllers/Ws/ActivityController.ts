@@ -18,7 +18,6 @@ export default class ActivityController {
     if (!auth.user) {
       return
     }
-    console.log(userData.username, userData.state)
     socket.broadcast.emit('statusChange', userData)
   }
 

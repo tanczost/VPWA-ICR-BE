@@ -23,11 +23,11 @@ Ws.namespace('channels/:channelId')
   .on('kick', 'KickController.addKick')
   .on('revoke', 'ChannelController.revoke')
   .on('quit', 'ChannelController.quit')
-  .on('isTyping', ({ socket }, message: string, userNick: string) => {
+  .on('isTyping', ({ socket }, message: string, userNick: string, channelId: number) => {
     if (message === '') {
-      socket.broadcast.emit('stopTyping', { userNick, message })
+      socket.broadcast.emit('stopTyping', { userNick, message, channelId })
     } else {
-      socket.broadcast.emit('isTyping', { userNick, message })
+      socket.broadcast.emit('isTyping', { userNick, message, channelId })
     }
   })
 
