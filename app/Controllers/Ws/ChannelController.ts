@@ -62,7 +62,7 @@ export default class ChannelController {
     )
 
     if (!isOwnerOfChannel) {
-      return
+      return socket.emit('Only owner can revoke members.')
     }
 
     const user = await User.findByOrFail('nickName', userNick)
