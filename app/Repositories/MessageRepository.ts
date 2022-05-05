@@ -18,7 +18,7 @@ export default class MessageRepository implements MessageRepositoryContract {
       .where({ channel_id: channelId })
       .where('created_at', '<', dateFrom.toString())
       .orderBy('created_at', 'desc')
-      .limit(20)
+      .limit(40)
 
     const messages = await Promise.all(
       messagesRaw.map(async (message) => {
@@ -52,7 +52,6 @@ export default class MessageRepository implements MessageRepositoryContract {
       .where({ channel_id: channelId })
       .where('created_at', '>', dateFrom.toString())
       .orderBy('created_at', 'desc')
-      .limit(20)
 
     const messages = await Promise.all(
       messagesRaw.map(async (message) => {
